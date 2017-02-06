@@ -28,4 +28,16 @@
         android:layout_marginBottom="95dp"
         android:id="@+id/timerView" />
 
+    <Button
+        android:text="Return"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="52dp"
+        android:id="@+id/buttonReturn"
+        android:visibility="invisible"
+        tools:text="Return"
+        android:onClick="onClick" />
+
 </RelativeLayout>

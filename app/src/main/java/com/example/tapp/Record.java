@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Button;
 
 import java.util.Locale;
 
@@ -20,6 +21,7 @@ public class Record extends AppCompatActivity {
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
         final TextView countText = (TextView) findViewById(R.id.countView);
+        final Button goToMain = (Button) findViewById(R.id.buttonReturn);
         this.timersComplete++;
 
         switch (this.timersComplete) {
@@ -38,6 +40,7 @@ public class Record extends AppCompatActivity {
                 // Inform user that the tapping is finished.
                 timerLabel.setText("And you're done!");
                 countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lCount, this.rCount));
+                goToMain.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -88,5 +91,9 @@ public class Record extends AppCompatActivity {
             TextView countText = (TextView) findViewById(R.id.countView);
             countText.setText(String.format(Locale.US, "%d", this.rCount));
         }
+    }
+
+    public void onClick(View v) {
+        finish();
     }
 }

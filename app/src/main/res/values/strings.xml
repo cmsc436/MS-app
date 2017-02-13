@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Tapp</string>
     <string name="start_button">Start test</string>
+    <string name="spiral_info">Trace the spiral image</string>
 </resources>

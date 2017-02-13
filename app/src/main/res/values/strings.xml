@@ -2,5 +2,5 @@
     <string name="app_name">Tapp</string>
     <string name="tap_button">Start tapping test</string>
     <string name="spiral_button">Start spiral test</string>
-    <string name="spiral_info">Trace the spiral image</string>
+    <string name="spiral_info">Trace the spiral</string>
 </resources>

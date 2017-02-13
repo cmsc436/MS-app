@@ -20,12 +20,15 @@
         android:layout_marginTop="49dp"
         android:id="@+id/textView" />
 
-    <ImageView
+
+    <view
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/spiral"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/imageView"
+        class="com.example.tapp.DrawView"
+        android:id="@+id/draw_view"
+        android:background="@drawable/spiral"
         android:layout_below="@+id/textView"
         android:layout_marginTop="12dp" />
+
+
 </RelativeLayout>

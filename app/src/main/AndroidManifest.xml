@@ -16,7 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Record" />
-        <activity android:name=".Spiral"></activity>
+        <activity android:name=".Spiral"/>
     </application>
 
 </manifest>

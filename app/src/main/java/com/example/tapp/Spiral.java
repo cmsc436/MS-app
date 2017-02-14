@@ -1,6 +1,7 @@
 package com.example.tapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
@@ -9,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 public class Spiral extends AppCompatActivity {
 
@@ -45,5 +47,11 @@ public class Spiral extends AppCompatActivity {
         drawing.setDrawingCacheEnabled(true);
         Bitmap bitmap = drawing.getDrawingCache();
         String savedImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Spiral", "Image of spiral");
+
+        Context context = getApplicationContext();
+        CharSequence text = "Saved image to " + savedImageURL;
+        int duration = Toast.LENGTH_SHORT;
+        Toast.makeText(context, text, duration).show();
+        finish();
     }
 }

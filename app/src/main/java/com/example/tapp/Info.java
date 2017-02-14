@@ -17,4 +17,9 @@ public class Info extends AppCompatActivity {
         Intent rec = new Intent(this, Record.class);
         startActivity(rec);
     }
+
+    public void navSpiral(View v) {
+        Intent spiral = new Intent(this, Spiral.class);
+        startActivity(spiral);
+    }
 }

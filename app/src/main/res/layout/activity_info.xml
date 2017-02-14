@@ -20,7 +20,9 @@
         android:minHeight="132dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="63dp" />
+        android:layout_marginTop="63dp"
+        android:textSize="12pt"
+        />
 
     <Button
         android:text="@string/spiral_button"
@@ -35,6 +37,8 @@
         android:layout_alignRight="@+id/button"
         android:layout_alignEnd="@+id/button"
         android:layout_alignLeft="@+id/button"
-        android:layout_alignStart="@+id/button" />
+        android:layout_alignStart="@+id/button"
+        android:textSize="12pt"
+        />
 
 </RelativeLayout>

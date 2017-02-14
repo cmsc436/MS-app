@@ -13,6 +13,8 @@ public class Record extends AppCompatActivity {
 
     int lCount = 0;
     int rCount = 0;
+    private int lTotal = 0;
+    private int rTotal = 0;
     private CountDownTimer timer;
     private CountDownTimer waitingTimer;
     private boolean countdownReadyToStart = true;
@@ -27,19 +29,75 @@ public class Record extends AppCompatActivity {
         switch (this.timersComplete) {
             case 1:
                 // Clear screen and set screen to waiting period.
+                timerLabel.setText("Please repeat left hand again.");
+                countText.setText("");
+                this.waitingTimer.start();
+                lTotal += lCount;
+                lCount = 0;
+                break;
+            case 2:
+                // End the waiting period and allow the next tap to start the timer.
+                timerLabel.setText("Tap the screen with your left hand.\nYou have 10 seconds to tap as quickly as possible.");
+                this.countdownReadyToStart = true;
+                break;
+            case 3:
+                // Clear screen and set screen to waiting period.
+                timerLabel.setText("Please repeat left hand once again.");
+                countText.setText("");
+                this.waitingTimer.start();
+                lTotal += lCount;
+                lCount = 0;
+                break;
+            case 4:
+                // End the waiting period and allow the next tap to start the timer.
+                timerLabel.setText("Tap the screen with your left hand.\nYou have 10 seconds to tap as quickly as possible.");
+                this.countdownReadyToStart = true;
+                break;
+            case 5:
+                // Clear screen and set screen to waiting period.
                 timerLabel.setText("Please switch to your right hand.");
                 countText.setText("");
                 this.waitingTimer.start();
+                lTotal += lCount;
+                lCount = 0;
                 break;
-            case 2:
+            case 6:
                 // End the waiting period and allow the next tap to start the timer.
                 timerLabel.setText("Tap the screen with your right hand.\nYou have 10 seconds to tap as quickly as possible.");
                 this.countdownReadyToStart = true;
                 break;
-            case 3:
+            case 7:
+                // Clear screen and set screen to waiting period.
+                timerLabel.setText("Please repeat right hand.");
+                countText.setText("");
+                this.waitingTimer.start();
+                rTotal += rCount;
+                rCount = 0;
+                break;
+            case 8:
+                // End the waiting period and allow the next tap to start the timer.
+                timerLabel.setText("Tap the screen with your right hand.\nYou have 10 seconds to tap as quickly as possible.");
+                this.countdownReadyToStart = true;
+                break;
+            case 9:
+                // Clear screen and set screen to waiting period.
+                timerLabel.setText("Please repeat right hand once again.");
+                countText.setText("");
+                this.waitingTimer.start();
+                rTotal += rCount;
+                rCount = 0;
+                break;
+            case 10:
+                // End the waiting period and allow the next tap to start the timer.
+                timerLabel.setText("Tap the screen with your right hand.\nYou have 10 seconds to tap as quickly as possible.");
+                this.countdownReadyToStart = true;
+                break;
+            case 11:
                 // Inform user that the tapping is finished.
+                rTotal += rCount;
+                rCount = 0;
                 timerLabel.setText("And you're done!");
-                countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lCount, this.rCount));
+                countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));
                 goToMain.setVisibility(View.VISIBLE);
                 break;
         }
@@ -66,7 +124,7 @@ public class Record extends AppCompatActivity {
         };
 
         // Configure a two second waiting period to prevent users from tapping between phases.
-        this.waitingTimer = new CountDownTimer(2000, 2000) {
+        this.waitingTimer = new CountDownTimer(3000, 3000) {
             public void onTick(long msTilFinish) {
             }
             public void onFinish() {
@@ -80,12 +138,12 @@ public class Record extends AppCompatActivity {
             this.countdownReadyToStart = false;
             this.timer.start();
         }
-        if (this.timersComplete == 0) {
+        if (this.timersComplete < 5 && this.timersComplete % 2 == 0) {
             this.lCount++;
             setContentView(v);
             TextView countText = (TextView) findViewById(R.id.countView);
             countText.setText(String.format(Locale.US, "%d", this.lCount));
-        } else if (this.timersComplete == 2) {
+        } else if (this.timersComplete < 11 && this.timersComplete % 2 == 0) {
             this.rCount++;
             setContentView(v);
             TextView countText = (TextView) findViewById(R.id.countView);

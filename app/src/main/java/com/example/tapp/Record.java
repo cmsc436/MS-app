@@ -115,7 +115,8 @@ public class Record extends AppCompatActivity {
         this.timer = new CountDownTimer(10000, 1000) {
             private int secondsLeft = 10;
             public void onTick(long msTilFinish) {
-                timerLabel.setText("Seconds left: " + String.valueOf(--this.secondsLeft));
+                this.secondsLeft--;
+                timerLabel.setText("");
             }
             public void onFinish() {
                 this.secondsLeft = 10;
@@ -123,7 +124,7 @@ public class Record extends AppCompatActivity {
             }
         };
 
-        // Configure a two second waiting period to prevent users from tapping between phases.
+        // Configure a three second waiting period to prevent users from tapping between phases.
         this.waitingTimer = new CountDownTimer(3000, 3000) {
             public void onTick(long msTilFinish) {
             }

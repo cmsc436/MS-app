@@ -4,6 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,7 +49,13 @@ public class Spiral extends AppCompatActivity {
         View drawing = (View) findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
         Bitmap bitmap = drawing.getDrawingCache();
-        String savedImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Spiral", "Image of spiral");
+
+        Bitmap combined = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Canvas canvas = new Canvas(combined);
+        canvas.drawColor(Color.WHITE);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+
+        String savedImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), combined, "Spiral", "Image of spiral");
 
         Context context = getApplicationContext();
         CharSequence text = "Saved image to " + savedImageURL;
@@ -54,4 +63,5 @@ public class Spiral extends AppCompatActivity {
         Toast.makeText(context, text, duration).show();
         finish();
     }
+    
 }

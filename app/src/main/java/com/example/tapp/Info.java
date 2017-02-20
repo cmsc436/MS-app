@@ -22,4 +22,9 @@ public class Info extends AppCompatActivity {
         Intent spiral = new Intent(this, Spiral.class);
         startActivity(spiral);
     }
+
+    public void navLevel(View v) {
+        Intent spiral = new Intent(this, Level.class);
+        startActivity(spiral);
+    }
 }

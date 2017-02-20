@@ -14,13 +14,12 @@
         android:text="@string/tap_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button"
+        android:id="@+id/button4"
         android:onClick="navRecord"
         android:minWidth="132dp"
         android:minHeight="132dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="63dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:text="@string/spiral_button"
@@ -30,11 +29,19 @@
         android:onClick="navSpiral"
         android:minWidth="132dp"
         android:minHeight="132dp"
-        android:layout_marginTop="68dp"
-        android:layout_below="@+id/button"
-        android:layout_alignRight="@+id/button"
-        android:layout_alignEnd="@+id/button"
-        android:layout_alignLeft="@+id/button"
-        android:layout_alignStart="@+id/button" />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="@string/level_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:onClick="navLevel"
+        android:minWidth="132dp"
+        android:minHeight="132dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/button2"
+        android:layout_alignStart="@+id/button2" />
 
 </RelativeLayout>

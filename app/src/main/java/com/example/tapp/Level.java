@@ -43,7 +43,6 @@ public class Level extends AppCompatActivity {
 
             setViews();
             setSensors();
-            // setFonts();
             setTextSize();
 
             button_Pause.setOnClickListener(new View.OnClickListener() {
@@ -80,17 +79,6 @@ public class Level extends AppCompatActivity {
             int width = size.x;
             int height = size.y;
             return height/30;
-        }
-
-        private void setFonts() {
-            type = Typeface.DEFAULT;
-            dimen_Vertical.setTypeface(type);
-            dimen_Horizontal.setTypeface(type);
-            text_Vertical.setTypeface(type);
-            text_Horizontal.setTypeface(type);
-            button_Start.setTypeface(type);
-            button_Pause.setTypeface(type);
-            tvText.setTypeface(type);
         }
 
         private void setSensors() {

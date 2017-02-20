@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:onClick="count"
-    tools:context="com.example.tapp.Record">
+    tools:context="com.example.tapp.Tap">
 
     <TextView
         android:layout_width="wrap_content"

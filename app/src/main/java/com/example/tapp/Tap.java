@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import java.util.Locale;
 
-public class Record extends AppCompatActivity {
+public class Tap extends AppCompatActivity {
 
     int lCount = 0;
     int rCount = 0;

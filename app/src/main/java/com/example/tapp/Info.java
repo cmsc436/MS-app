@@ -14,7 +14,7 @@ public class Info extends AppCompatActivity {
     }
 
     public void navRecord(View v) {
-        Intent rec = new Intent(this, Record.class);
+        Intent rec = new Intent(this, Tap.class);
         startActivity(rec);
     }
 

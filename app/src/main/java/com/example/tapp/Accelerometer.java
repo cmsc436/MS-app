@@ -49,6 +49,11 @@ public class Accelerometer extends View {
         this.y = y;
     }
 
+    public void clear() {
+        this.initialPointSet = false;
+        this.linePath.reset();
+    }
+
     public float getXdimen(){
         return x;
     }

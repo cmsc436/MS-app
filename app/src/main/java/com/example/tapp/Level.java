@@ -74,6 +74,7 @@ public class Level extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
                 timer.cancel();
                 this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
+                accelerometer.clear();
             } else {
                 Toast.makeText(getApplicationContext(), "All trials complete!",
                         Toast.LENGTH_LONG).show();

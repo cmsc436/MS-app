@@ -15,10 +15,11 @@ public class Accelerometer extends View {
     int widthSize, heightSize, widthMode, heightMode;
     int widthResult, heightResult;
     int centerX, centerY, radius, x1, x2, y1, y2, x3, y3, x3_correct;
-    Path path, path1;
-    Paint paint;
+    Path path, linePath;
+    Paint paint, linePaint;
     Rect rect;
     float x, y;
+    boolean initialPointSet = false;
 
     public Accelerometer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,8 +33,15 @@ public class Accelerometer extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.BLACK);
 
+        linePaint = new Paint();
+        linePaint.setAntiAlias(true);
+        linePaint.setStrokeWidth(5f);
+        linePaint.setColor(Color.RED);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setStrokeJoin(Paint.Join.ROUND);
+
         path = new Path();
-        path1 = new Path();
+        linePath = new Path();
     }
 
     public void setXY(float x, float y){
@@ -80,6 +88,17 @@ public class Accelerometer extends View {
         super.onDraw(canvas);
         drawBackground(canvas);
         drawBulbe(canvas);
+        drawPathing(canvas);
+    }
+
+    private void drawPathing(Canvas canvas) {
+        if (!this.initialPointSet) {
+            this.initialPointSet = true;
+            this.linePath.moveTo(rect.exactCenterX(), rect.exactCenterY());
+        } else {
+            this.linePath.lineTo(rect.exactCenterX(), rect.exactCenterY());
+        }
+        canvas.drawPath(linePath, linePaint);
     }
 
     private void drawBulbe(Canvas canvas) {
@@ -122,11 +141,7 @@ public class Accelerometer extends View {
     }
 
     private void drawBackground(Canvas canvas) {
-        createBigRect(canvas);
-        designBigRect(canvas);
-    }
-
-    private void designBigRect(Canvas canvas) {
+        radius = Math.min(widthResult, heightResult)/10;
         path.moveTo(centerX, centerY-radius*4);
         path.lineTo(centerX, centerY+radius*4);
 
@@ -140,15 +155,6 @@ public class Accelerometer extends View {
         canvas.drawPath(path, paint);
     }
 
-    private void createBigRect(Canvas canvas) {
-        radius = Math.min(widthResult, heightResult)/10;
-        int x1 = centerX - radius*4, y1 = centerY - radius*4, x2 = centerX + radius*4,  y2 = centerY + radius*4;
-        Rect rect = new Rect(x1, y1, x2, y2);
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.circle_background), null, rect, paint);
-
-    }
-
-    // обновляем скорость при каждом вызове
     public void onXY_Update(float x, float y) {
         this.setXY(x, y);
         this.invalidate();

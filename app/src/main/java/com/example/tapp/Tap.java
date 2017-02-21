@@ -13,10 +13,14 @@ public class Tap extends AppCompatActivity {
 
     int lCount = 0;
     int rCount = 0;
+    private int lTotal = 0;
+    private int rTotal = 0;
     private CountDownTimer timer;
     private CountDownTimer waitingTimer;
     private boolean countdownReadyToStart = true;
     private int timersComplete = 0;
+    private String hand = "left";
+    private int trial = 1;
 
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
@@ -27,19 +31,47 @@ public class Tap extends AppCompatActivity {
         switch (this.timersComplete) {
             case 1:
                 // Clear screen and set screen to waiting period.
-                timerLabel.setText("Please switch to your right hand.");
+                trial++;
+                timerLabel.setText("Please repeat " + hand + " hand for trial " + trial + ".");
                 countText.setText("");
                 this.waitingTimer.start();
+                lTotal += lCount;
+                lCount = 0;
+                rTotal += rCount;
+                rCount = 0;
                 break;
             case 2:
                 // End the waiting period and allow the next tap to start the timer.
-                timerLabel.setText("Tap the screen with your right hand.\nYou have 10 seconds to tap as quickly as possible.");
+                timerLabel.setText("Tap the screen with your " + hand + " hand.\nYou have 10 seconds" +
+                        " to tap as quickly as possible.\n" + hand + trial);
                 this.countdownReadyToStart = true;
+                if (trial == 3 && hand == "left") {
+                    trial = 1;
+                } else if (trial == 3 && hand == "right") {
+                    timersComplete = 4;
+                } else {
+                    timersComplete = 0;
+                }
                 break;
             case 3:
+                // Clear screen and set screen to waiting period.
+                timerLabel.setText("Please switch to your right hand.");
+                countText.setText("");
+                hand = "right";
+                trial = 1;
+                this.timersComplete = 1;
+                this.waitingTimer.start();
+                lTotal += lCount;
+                lCount = 0;
+                rTotal += rCount;
+                rCount = 0;
+                break;
+            case 5:
                 // Inform user that the tapping is finished.
+                rTotal += rCount;
+                rCount = 0;
                 timerLabel.setText("And you're done!");
-                countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lCount, this.rCount));
+                countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));
                 goToMain.setVisibility(View.VISIBLE);
                 break;
         }
@@ -57,7 +89,8 @@ public class Tap extends AppCompatActivity {
         this.timer = new CountDownTimer(10000, 1000) {
             private int secondsLeft = 10;
             public void onTick(long msTilFinish) {
-                timerLabel.setText("Seconds left: " + String.valueOf(--this.secondsLeft));
+                this.secondsLeft--;
+                timerLabel.setText("");
             }
             public void onFinish() {
                 this.secondsLeft = 10;
@@ -65,8 +98,8 @@ public class Tap extends AppCompatActivity {
             }
         };
 
-        // Configure a two second waiting period to prevent users from tapping between phases.
-        this.waitingTimer = new CountDownTimer(2000, 2000) {
+        // Configure a three second waiting period to prevent users from tapping between phases.
+        this.waitingTimer = new CountDownTimer(3000, 3000) {
             public void onTick(long msTilFinish) {
             }
             public void onFinish() {
@@ -80,12 +113,12 @@ public class Tap extends AppCompatActivity {
             this.countdownReadyToStart = false;
             this.timer.start();
         }
-        if (this.timersComplete == 0) {
+        if (hand == "left" && this.timersComplete % 2 == 0) {
             this.lCount++;
             setContentView(v);
             TextView countText = (TextView) findViewById(R.id.countView);
             countText.setText(String.format(Locale.US, "%d", this.lCount));
-        } else if (this.timersComplete == 2) {
+        } else if (hand == "right" && this.timersComplete % 2 == 0) {
             this.rCount++;
             setContentView(v);
             TextView countText = (TextView) findViewById(R.id.countView);

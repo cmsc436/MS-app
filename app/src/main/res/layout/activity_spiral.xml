@@ -18,7 +18,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:textSize="8pt"
+        />
 
 
     <view
@@ -37,7 +39,9 @@
         android:id="@+id/button3"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:onClick="saveSpiral" />
+        android:onClick="saveSpiral"
+        android:textSize="8pt"
+        />
 
 
 </RelativeLayout>

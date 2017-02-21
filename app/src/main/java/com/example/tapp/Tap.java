@@ -43,7 +43,7 @@ public class Tap extends AppCompatActivity {
             case 2:
                 // End the waiting period and allow the next tap to start the timer.
                 timerLabel.setText("Tap the screen with your " + hand + " hand.\nYou have 10 seconds" +
-                        " to tap as quickly as possible.\n" + hand + trial);
+                        " to tap as quickly as possible.\n");
                 this.countdownReadyToStart = true;
                 if (trial == 3 && hand == "left") {
                     trial = 1;

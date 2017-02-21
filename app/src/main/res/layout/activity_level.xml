@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/src_img_sub_blank">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,20 +13,32 @@
 
         <com.example.tapp.Accelerometer
             android:id="@+id/accelerometer"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="234dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/level_start"
         android:id="@+id/button_Start"
         android:onClick="set_Start"
-        android:layout_weight="0.5" />
+
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="7pt"
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        />
 
 
 </LinearLayout>

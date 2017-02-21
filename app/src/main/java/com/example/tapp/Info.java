@@ -14,12 +14,17 @@ public class Info extends AppCompatActivity {
     }
 
     public void navRecord(View v) {
-        Intent rec = new Intent(this, Record.class);
+        Intent rec = new Intent(this, Tap.class);
         startActivity(rec);
     }
 
     public void navSpiral(View v) {
         Intent spiral = new Intent(this, Spiral.class);
+        startActivity(spiral);
+    }
+
+    public void navLevel(View v) {
+        Intent spiral = new Intent(this, Level.class);
         startActivity(spiral);
     }
 }

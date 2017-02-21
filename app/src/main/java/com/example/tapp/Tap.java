@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import java.util.Locale;
 
-public class Record extends AppCompatActivity {
+public class Tap extends AppCompatActivity {
 
     int lCount = 0;
     int rCount = 0;
@@ -80,7 +80,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record);
+        setContentView(R.layout.activity_tap);
 
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
         timerLabel.setText("Tap the screen with your left hand.\nYou have 10 seconds to tap as quickly as possible.");

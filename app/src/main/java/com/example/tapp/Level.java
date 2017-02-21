@@ -1,6 +1,11 @@
 package com.example.tapp;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.CountDownTimer;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.pm.ActivityInfo;
@@ -68,11 +73,30 @@ public class Level extends AppCompatActivity {
                 button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
                 Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
                 timer.cancel();
+                this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
             } else {
                 Toast.makeText(getApplicationContext(), "All trials complete!",
                         Toast.LENGTH_LONG).show();
                 finish();
             }
+        }
+
+        private void saveCanvasToGallery(String title, String description) {
+            View drawing = (View) findViewById(R.id.accelerometer);
+            drawing.setDrawingCacheEnabled(true);
+            Bitmap bitmap = drawing.getDrawingCache();
+
+            Bitmap combined = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+            Canvas canvas = new Canvas(combined);
+            canvas.drawColor(Color.WHITE);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+
+            String savedImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), combined, title, description);
+
+            Context context = getApplicationContext();
+            CharSequence text = "Saved image to " + savedImageURL;
+            int duration = Toast.LENGTH_SHORT;
+            Toast.makeText(context, text, duration).show();
         }
 
         private void setSensors() {

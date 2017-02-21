@@ -80,7 +80,7 @@ public class Tap extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record);
+        setContentView(R.layout.activity_tap);
 
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
         timerLabel.setText("Tap the screen with your left hand.\nYou have 10 seconds to tap as quickly as possible.");

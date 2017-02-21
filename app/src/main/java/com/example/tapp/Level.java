@@ -1,5 +1,6 @@
 package com.example.tapp;
 
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.pm.ActivityInfo;
@@ -9,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +26,11 @@ public class Level extends AppCompatActivity {
         Sensor sensorAccel;
         MyTask myTask;
         Timer timer;
+        CountDownTimer recordTimer;
 
+        int trialsComplete;
+        String hand = "left";
+        static int numTrials = 4;
         Button button_Start;
 
         @Override
@@ -35,12 +41,38 @@ public class Level extends AppCompatActivity {
             setViews();
             setSensors();
 
-            button_Start.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    set_Start();
+            // Configure a 10 second timer to allow the user tap.
+            recordTimer = new CountDownTimer(10000, 1000) {
+                public void onTick(long msTilFinish) { }
+                public void onFinish() {
+                    handleTimerComplete();
                 }
-            });
+            };
+
+            trialsComplete = 0;
+        }
+
+        private void handleTimerComplete() {
+            trialsComplete++;
+            if (trialsComplete < numTrials) {
+                switch (hand) {
+                    case "right":
+                        hand = "left";
+                        break;
+                    case "left":
+                        hand = "right";
+                        break;
+                    default:
+                        hand = "left";
+                }
+                button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
+                Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
+                timer.cancel();
+            } else {
+                Toast.makeText(getApplicationContext(), "All trials complete!",
+                        Toast.LENGTH_LONG).show();
+                finish();
+            }
         }
 
         private void setSensors() {
@@ -59,13 +91,16 @@ public class Level extends AppCompatActivity {
 
             button_Start = (Button) findViewById(R.id.button_Start);
             accelerometer = (Accelerometer) findViewById(R.id.accelerometer);
+
+            button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
         }
 
-        private void set_Start() {
+        public void set_Start(View v) {
             if(timer!=null){timer.cancel();}
             timer = new Timer();
             myTask = new MyTask();
             timer.schedule(myTask, 0, 10);
+            recordTimer.start();
         }
 
         private void setDegrees() {

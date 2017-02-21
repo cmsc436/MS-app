@@ -9,6 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:onClick="count"
+    android:background="@drawable/src_img_sub"
     tools:context="com.example.tapp.Tap">
 
     <TextView
@@ -17,30 +18,40 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/countView"
-        android:textSize="30sp" />
+        android:textSize="50sp"
+        android:textColor="#00599d"
+        />
 
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/countView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="95dp"
         android:id="@+id/timerView"
-        android:textSize="8pt"
-        />
+        android:textSize="7pt"
+        android:layout_marginTop="97dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:text="Return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="55dp"
         android:id="@+id/buttonReturn"
-        android:visibility="invisible"
         tools:text="Return"
         android:onClick="onClick"
-        android:textSize="12pt" />
+
+        android:textSize="7pt"
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

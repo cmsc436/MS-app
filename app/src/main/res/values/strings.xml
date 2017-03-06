@@ -6,4 +6,6 @@
     <string name="save_button">Save spiral</string>
     <string name="spiral_info">Trace the spiral</string>
     <string name="level_start">Start %1$s trial %2$d</string>
+    <string name="title_activity_popper">Popper</string>
+    <string name="popper_start">Start popping test</string>>
 </resources>

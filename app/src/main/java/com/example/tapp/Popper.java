@@ -19,7 +19,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
 
     private int numTrials = 3;
     private int numBalloons = 10;
-    private double reactionTimes[][];
+    private long reactionTimes[][]; // times in nanoseconds
+    private long startTime;
     private int trialsComplete;
     private boolean finished;
     private int balloonCount;
@@ -36,7 +37,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         finished = true;
         trialsComplete = 0;
         balloonCount = 0;
-        reactionTimes = new double[numTrials][numBalloons];
+        reactionTimes = new long[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
         buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
@@ -77,12 +78,15 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         balloon.setX(random.nextInt(mScreenWidth - 200));
         balloon.setY(random.nextInt(mScreenHeight - 200));
         mContentView.addView(balloon);
-        // TODO: start timer
+        startTime = System.nanoTime();
     }
 
     @Override
     public void popBalloon(Balloon balloon, boolean touched) {
         mContentView.removeView(balloon);
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
+        reactionTimes[trialsComplete][balloonCount] = elapsedTime;
         balloonCount++;
         if (balloonCount >= numBalloons) {
             finished = true;
@@ -93,7 +97,6 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
             }
         } else {
-            // TODO: record times
             // TODO: wait 0-1 seconds before sending the next balloon
             launchBalloon();
         }

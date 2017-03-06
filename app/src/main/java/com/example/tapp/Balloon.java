@@ -28,7 +28,7 @@ public class Balloon extends AppCompatImageView
 
         this.mListener = (BalloonListener) context;
 
-        this.setImageResource(R.drawable.balloon);
+        this.setImageResource(R.drawable.circle);
         this.setColorFilter(color);
 
         int rawWidth = rawHeight / 2;

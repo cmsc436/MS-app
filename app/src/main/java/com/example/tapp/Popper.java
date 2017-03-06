@@ -76,7 +76,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         Balloon balloon = new Balloon(this, mBalloonColors[0], 150, 1);
         Random random = new Random(new Date().getTime());
         balloon.setX(random.nextInt(mScreenWidth - 200));
-        balloon.setY(random.nextInt(mScreenHeight - 200));
+        balloon.setY(random.nextInt(mScreenHeight - 350));
         mContentView.addView(balloon);
         startTime = System.nanoTime();
     }

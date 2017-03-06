@@ -1,8 +1,8 @@
 package com.example.tapp;
 
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -97,8 +97,12 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
             }
         } else {
-            // TODO: wait 0-1 seconds before sending the next balloon
-            launchBalloon();
+            Random random = new Random(new Date().getTime());
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    launchBalloon();
+                }
+            }, random.nextInt(1000));
         }
     }
 }

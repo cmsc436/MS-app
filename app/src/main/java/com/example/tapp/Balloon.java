@@ -7,9 +7,9 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.AppCompatImageView;
+import android.widget.ImageView;
 
-public class Balloon extends AppCompatImageView
+public class Balloon extends ImageView
         implements View.OnTouchListener,
         Animator.AnimatorListener,
         ValueAnimator.AnimatorUpdateListener {

@@ -1,12 +1,21 @@
 package com.example.tapp;
 
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Popper extends AppCompatActivity {
+import java.util.Date;
+import java.util.Random;
+
+public class Popper extends AppCompatActivity implements Balloon.BalloonListener {
 
     private int numTrials = 3;
     private int numBalloons = 10;
@@ -14,6 +23,9 @@ public class Popper extends AppCompatActivity {
     private int trialsComplete;
     private boolean finished;
     private int balloonCount;
+    private int[] mBalloonColors = new int[3];
+    private ViewGroup mContentView;
+    private int mScreenWidth, mScreenHeight;
 
     Button buttonStart;
 
@@ -27,21 +39,23 @@ public class Popper extends AppCompatActivity {
         reactionTimes = new double[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
         buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
-    }
+        mBalloonColors[0] = Color.argb(255, 255, 0, 0);
+        mBalloonColors[1] = Color.argb(255, 0, 255, 0);
+        mBalloonColors[2] = Color.argb(255, 0, 0, 255);
+        mContentView = (ViewGroup) findViewById(R.id.balloon_view);
 
-    private void runTrial(View v) {
-        while (balloonCount < numBalloons) {
-            // Spawn balloon at random interval between 0-1 second
-            // Record the time it took the user to tap that balloon
-            System.out.println("Balloon " + balloonCount + " in trial number " + (trialsComplete + 1));
-            balloonCount++;
-        }
-        finished = true;
-        trialsComplete++;
-        if (trialsComplete == numTrials) {
-            buttonStart.setText(getString(R.string.popper_end));
-        } else {
-            buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
+        ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onGlobalLayout() {
+                    mContentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    // TODO: account for device rotation
+                    mScreenWidth = mContentView.getWidth();
+                    mScreenHeight = mContentView.getHeight();
+                }
+            });
         }
     }
 
@@ -49,11 +63,39 @@ public class Popper extends AppCompatActivity {
         if (finished && trialsComplete < numTrials) {
             finished = false;
             balloonCount = 0;
-            runTrial(v);
+            launchBalloon();
         } else if (trialsComplete == numTrials){
             finish();
         } else {
             Toast.makeText(getApplicationContext(), "Trial not complete!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchBalloon() {
+        Balloon balloon = new Balloon(this, mBalloonColors[0], 150, 1);
+        Random random = new Random(new Date().getTime());
+        balloon.setX(random.nextInt(mScreenWidth - 200));
+        balloon.setY(random.nextInt(mScreenHeight - 200));
+        mContentView.addView(balloon);
+        // TODO: start timer
+    }
+
+    @Override
+    public void popBalloon(Balloon balloon, boolean touched) {
+        mContentView.removeView(balloon);
+        balloonCount++;
+        if (balloonCount >= numBalloons) {
+            finished = true;
+            trialsComplete++;
+            if (trialsComplete == numTrials) {
+                buttonStart.setText(getString(R.string.popper_end));
+            } else {
+                buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
+            }
+        } else {
+            // TODO: record times
+            // TODO: wait 0-1 seconds before sending the next balloon
+            launchBalloon();
         }
     }
 }

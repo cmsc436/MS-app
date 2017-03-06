@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class Popper extends AppCompatActivity implements Balloon.BalloonListener {
@@ -22,7 +23,6 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     private long reactionTimes[][]; // times in nanoseconds
     private long startTime;
     private int trialsComplete;
-    private boolean finished;
     private int balloonCount;
     private int[] mBalloonColors = new int[3];
     private ViewGroup mContentView;
@@ -34,7 +34,6 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popper);
-        finished = true;
         trialsComplete = 0;
         balloonCount = 0;
         reactionTimes = new long[numTrials][numBalloons];
@@ -61,14 +60,13 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     }
 
     public void setStart(View v) {
-        if (finished && trialsComplete < numTrials) {
-            finished = false;
+        if (trialsComplete < numTrials) {
             balloonCount = 0;
+            buttonStart.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), String.format(Locale.getDefault(), "Trial %d started!", trialsComplete + 1), Toast.LENGTH_SHORT).show();
             launchBalloon();
-        } else if (trialsComplete == numTrials){
+        } else  {
             finish();
-        } else {
-            Toast.makeText(getApplicationContext(), "Trial not complete!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -89,8 +87,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         reactionTimes[trialsComplete][balloonCount] = elapsedTime;
         balloonCount++;
         if (balloonCount >= numBalloons) {
-            finished = true;
             trialsComplete++;
+            buttonStart.setVisibility(View.VISIBLE);
             if (trialsComplete == numTrials) {
                 buttonStart.setText(getString(R.string.popper_end));
             } else {

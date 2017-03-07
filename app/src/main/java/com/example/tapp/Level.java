@@ -38,6 +38,9 @@ public class Level extends AppCompatActivity {
         static int numTrials = 4;
         Button button_Start;
 
+        int lScore = 0;
+        int rScore = 0;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -62,9 +65,13 @@ public class Level extends AppCompatActivity {
             if (trialsComplete < numTrials) {
                 switch (hand) {
                     case "right":
+                        rScore = rScore + this.scoreCache();
+
                         hand = "left";
                         break;
                     case "left":
+                        lScore = lScore + this.scoreCache();
+
                         hand = "right";
                         break;
                     default:
@@ -76,10 +83,47 @@ public class Level extends AppCompatActivity {
                 this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
                 accelerometer.clear();
             } else {
+                rScore = rScore + scoreCache();
+                this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
+
+                lScore = lScore / (numTrials/2);
+                rScore = rScore / (numTrials/2);
                 Toast.makeText(getApplicationContext(), "All trials complete!",
                         Toast.LENGTH_LONG).show();
+                button_Start.setText("All trials complete!\n Left: " + lScore + " Right: " + rScore);
+
                 finish();
             }
+        }
+
+        private int scoreCache() {
+            double totalDist = 0;
+            double pixCount = 0;
+            int redThreshold = 200;
+
+            View drawing = (View) findViewById(R.id.accelerometer);
+            drawing.setDrawingCacheEnabled(true);
+            Bitmap bitmap = drawing.getDrawingCache();
+
+            int height = bitmap.getHeight();
+            int width = bitmap.getWidth();
+
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                    if(Color.red(bitmap.getPixel(i, j)) > redThreshold) {
+                        double dist = Math.sqrt(((height/2)-j)*((height/2)-j) + ((width/2)-i)*((width/2)-i));
+                        totalDist += dist;
+                        pixCount++;
+                    }
+                }
+            }
+
+            int score = 0;
+            if (pixCount != 0) {
+                score = (int) Math.round(totalDist / pixCount);
+            }
+
+            return score;
         }
 
         private void saveCanvasToGallery(String title, String description) {

@@ -25,7 +25,7 @@ public class Tap extends AppCompatActivity {
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
         final TextView countText = (TextView) findViewById(R.id.countView);
-        //final TextView tapRegion = (TextView) findViewById(R.id.tapRegion);
+        final TextView tapRegion = (TextView) findViewById(R.id.tapRegion);
         final Button goToMain = (Button) findViewById(R.id.buttonReturn);
         this.timersComplete++;
 
@@ -33,10 +33,10 @@ public class Tap extends AppCompatActivity {
             case 1:
                 // Clear screen and set screen to waiting period.
                 trial++;
-                //tapRegion.setVisibility(View.INVISIBLE);
+                tapRegion.setVisibility(View.INVISIBLE);
                 timerLabel.setText("Please repeat " + hand + " hand for trial " + trial + ".");
                 countText.setText("");
-                //tapRegion.setVisibility(View.VISIBLE);
+                tapRegion.setVisibility(View.VISIBLE);
                 this.waitingTimer.start();
                 lTotal += lCount;
                 lCount = 0;
@@ -45,7 +45,7 @@ public class Tap extends AppCompatActivity {
                 break;
             case 2:
                 // End the waiting period and allow the next tap to start the timer.
-                //tapRegion.setVisibility(View.INVISIBLE);
+                tapRegion.setVisibility(View.INVISIBLE);
                 timerLabel.setText("Tap the screen with your " + hand + " hand.\nYou have 10 seconds" +
                         " to tap as quickly as possible.\n");
                 this.countdownReadyToStart = true;
@@ -56,17 +56,17 @@ public class Tap extends AppCompatActivity {
                 } else {
                     timersComplete = 0;
                 }
-                //tapRegion.setVisibility(View.VISIBLE);
+                tapRegion.setVisibility(View.VISIBLE);
                 break;
             case 3:
                 // Clear screen and set screen to waiting period.
-                //tapRegion.setVisibility(View.INVISIBLE);
+                tapRegion.setVisibility(View.INVISIBLE);
                 timerLabel.setText("Please switch to your right hand.");
                 countText.setText("");
                 hand = "right";
                 trial = 1;
                 this.timersComplete = 1;
-                //tapRegion.setVisibility(View.VISIBLE);
+                tapRegion.setVisibility(View.VISIBLE);
                 this.waitingTimer.start();
                 lTotal += lCount;
                 lCount = 0;
@@ -77,7 +77,7 @@ public class Tap extends AppCompatActivity {
                 // Inform user that the tapping is finished.
                 rTotal += rCount;
                 rCount = 0;
-                //tapRegion.setVisibility(View.INVISIBLE);
+                tapRegion.setVisibility(View.INVISIBLE);
                 timerLabel.setText("And you're done!");
                 countText.setVisibility(View.VISIBLE);
                 countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));

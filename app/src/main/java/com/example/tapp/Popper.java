@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Date;
@@ -65,7 +66,25 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             buttonStart.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), String.format(Locale.getDefault(), "Trial %d started!", trialsComplete + 1), Toast.LENGTH_SHORT).show();
             launchBalloon();
-        } else  {
+        } else if (trialsComplete == numTrials) {
+            double[] averages = new double[numTrials];
+            for (int i = 0; i < numTrials; i++) {
+                double sum = 0;
+                for(int j = 0; j < numBalloons; j++) {
+                    sum += reactionTimes[i][j];
+                }
+                averages[i] = sum / numBalloons;
+            }
+            String resString = "";
+            for (int i = 0; i < numTrials; i++) {
+                resString += String.format(Locale.US, "Trial %d average: %.2f sec\n", i+1,
+                        (averages[i] / 1000000000));
+            }
+            TextView results = (android.widget.TextView) findViewById(R.id.popResults);
+            results.setText(resString);
+            buttonStart.setText(getString(R.string.popper_end));
+            trialsComplete++;
+        } else {
             finish();
         }
     }
@@ -90,7 +109,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             trialsComplete++;
             buttonStart.setVisibility(View.VISIBLE);
             if (trialsComplete == numTrials) {
-                buttonStart.setText(getString(R.string.popper_end));
+                buttonStart.setText(getString(R.string.popper_view));
             } else {
                 buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
             }

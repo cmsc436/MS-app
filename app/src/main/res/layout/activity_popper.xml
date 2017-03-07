@@ -17,7 +17,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/popResults"
-        android:textSize="50sp"
+        android:textSize="36sp"
         android:textColor="#00599d"
         />
 

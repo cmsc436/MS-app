@@ -3,7 +3,14 @@
     <string name="tap_button">Start tapping test</string>
     <string name="spiral_button">Start spiral test</string>
     <string name="level_button">Start level test</string>
+    <string name="popper_button">Start popping test</string>>
+
     <string name="save_button">Save spiral</string>
     <string name="spiral_info">Trace the spiral</string>
+
     <string name="level_start">Start %1$s trial %2$d</string>
+
+    <string name="popper_start">Start trial %1$d</string>
+    <string name="popper_view">View results</string>>
+    <string name="popper_end">Finish test</string>
 </resources>

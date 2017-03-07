@@ -24,7 +24,12 @@ public class Info extends AppCompatActivity {
     }
 
     public void navLevel(View v) {
-        Intent spiral = new Intent(this, Level.class);
-        startActivity(spiral);
+        Intent level = new Intent(this, Level.class);
+        startActivity(level);
+    }
+
+    public void navPopper(View v) {
+        Intent popper = new Intent(this, Popper.class);
+        startActivity(popper);
     }
 }

@@ -64,6 +64,10 @@ public class Sheets extends Activity
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
+    private List<Object> rowToAdd;
+
+    final public static String EXTRA_SHEETS = "com.example.tapp.SHEETS";
+
     /**
      * Create the main activity.
      * @param savedInstanceState previously saved instance data.
@@ -110,6 +114,12 @@ public class Sheets extends Activity
 
         setContentView(activityLayout);
 
+        Intent intent = getIntent();
+        ArrayList<String> msg = intent.getStringArrayListExtra(EXTRA_SHEETS);
+
+        rowToAdd = new ArrayList<>();
+        rowToAdd.addAll(msg);
+
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
@@ -135,6 +145,7 @@ public class Sheets extends Activity
         } else {
             new MakeRequestTask(mCredential).execute();
         }
+        finish();
     }
 
     /**
@@ -359,14 +370,7 @@ public class Sheets extends Activity
             String range = "!A2:F";
 
             List<List<Object>> values = new ArrayList<>();
-            List<Object> row1 = new ArrayList<Object>();
-            row1.add("tapping");
-            row1.add("Dec 10, 2015");
-            row1.add("number of taps in 10 seconds");
-            row1.add("10");
-            row1.add("15");
-            row1.add("5");
-            values.add(row1);
+            values.add(rowToAdd);
 
             ValueRange valueRange = new ValueRange();
             valueRange.setValues(values);
@@ -375,7 +379,6 @@ public class Sheets extends Activity
                     .append(spreadsheetId, range, valueRange)
                     .setValueInputOption("RAW")
                     .execute();
-            System.out.println("TEST" + response.getUpdates());
 
             return null;
         }

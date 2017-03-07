@@ -40,7 +40,10 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -59,7 +62,7 @@ public class Sheets extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Sheets API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
     /**
      * Create the main activity.
@@ -352,20 +355,29 @@ public class Sheets extends Activity
          * @throws IOException
          */
         private List<String> getDataFromApi() throws IOException {
-            String spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
-            String range = "Class Data!A2:E";
-            List<String> results = new ArrayList<String>();
-            ValueRange response = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
+            String spreadsheetId = "1VAW7nT26jyeFZwrhSlb9u8Y2nYeVOerUfml5Yi4hh10";
+            String range = "!A2:F";
+
+            List<List<Object>> values = new ArrayList<>();
+            List<Object> row1 = new ArrayList<Object>();
+            row1.add("tapping");
+            row1.add("Dec 10, 2015");
+            row1.add("number of taps in 10 seconds");
+            row1.add("10");
+            row1.add("15");
+            row1.add("5");
+            values.add(row1);
+
+            ValueRange valueRange = new ValueRange();
+            valueRange.setValues(values);
+
+            AppendValuesResponse response = this.mService.spreadsheets().values()
+                    .append(spreadsheetId, range, valueRange)
+                    .setValueInputOption("RAW")
                     .execute();
-            List<List<Object>> values = response.getValues();
-            if (values != null) {
-                results.add("Name, Major");
-                for (List row : values) {
-                    results.add(row.get(0) + ", " + row.get(4));
-                }
-            }
-            return results;
+            System.out.println("TEST" + response.getUpdates());
+
+            return null;
         }
 
 

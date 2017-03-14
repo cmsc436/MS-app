@@ -78,7 +78,9 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         row.add(format.format(c.getTime()));
 
         row.add("n/a");
+
         row.add(Integer.toString(numBalloons * numTrials));
+
         row.add(Double.toString(avg));
 
         sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);

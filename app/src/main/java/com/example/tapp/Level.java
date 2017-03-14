@@ -1,6 +1,7 @@
 package com.example.tapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,6 +19,10 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,6 +66,29 @@ public class Level extends AppCompatActivity {
             trialsComplete = 0;
         }
 
+        private void sendToSheets(int score, int sheet) {
+            // Send data to sheets
+            Intent sheets = new Intent(this, Sheets.class);
+            ArrayList<String> row = new ArrayList<>();
+            row.add(Integer.toString(Sheets.teamID));
+
+            SimpleDateFormat format;
+            Calendar c = Calendar.getInstance();
+            format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+            row.add(format.format(c.getTime()));
+
+            row.add("n/a");
+
+            // TODO: add PER-TRIAL scores
+            row.add(Integer.toString(score));
+            row.add(Integer.toString(score));
+            row.add(Integer.toString(score));
+
+            sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+            sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+            startActivity(sheets);
+        }
+
         private void handleTimerComplete() {
             trialsComplete++;
             if (trialsComplete < numTrials) {
@@ -98,6 +126,9 @@ public class Level extends AppCompatActivity {
                 // display score until exit
                 View accel = findViewById(R.id.accelerometer);
                 accel.setVisibility(View.INVISIBLE);
+
+                sendToSheets(lScore, Sheets.UpdateType.LH_LEVEL.ordinal());
+                sendToSheets(rScore, Sheets.UpdateType.RH_LEVEL.ordinal());
 
                 Button returnButton = (Button) findViewById(R.id.buttonReturn);
                 TextView scoreDisplay = (TextView) findViewById(R.id.score_display);

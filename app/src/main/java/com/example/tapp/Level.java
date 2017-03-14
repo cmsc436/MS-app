@@ -41,7 +41,7 @@ public class Level extends AppCompatActivity {
 
         int trialsComplete;
         String hand = "left";
-        static int numTrials = 4;
+        static int numTrials = 6;
         Button button_Start;
 
         int lScore = 0;
@@ -66,7 +66,7 @@ public class Level extends AppCompatActivity {
             trialsComplete = 0;
         }
 
-        private void sendToSheets(int score, int sheet) {
+        private void sendToSheets(int[] scores, int sheet) {
             // Send data to sheets
             Intent sheets = new Intent(this, Sheets.class);
             ArrayList<String> row = new ArrayList<>();
@@ -79,10 +79,8 @@ public class Level extends AppCompatActivity {
 
             row.add("n/a");
 
-            // TODO: add PER-TRIAL scores
-            row.add(Integer.toString(score));
-            row.add(Integer.toString(score));
-            row.add(Integer.toString(score));
+            for (int i = 0; i < numTrials / 2; i++)
+                row.add(Integer.toString(scores[i]));
 
             sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
             sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
@@ -127,8 +125,12 @@ public class Level extends AppCompatActivity {
                 View accel = findViewById(R.id.accelerometer);
                 accel.setVisibility(View.INVISIBLE);
 
-                sendToSheets(lScore, Sheets.UpdateType.LH_LEVEL.ordinal());
-                sendToSheets(rScore, Sheets.UpdateType.RH_LEVEL.ordinal());
+                // TODO: add PER-TRIAL scores
+                int[] lScores = {lScore, lScore, lScore};
+                int[] rScores = {rScore, rScore, rScore};
+
+                sendToSheets(lScores, Sheets.UpdateType.LH_LEVEL.ordinal());
+                sendToSheets(rScores, Sheets.UpdateType.RH_LEVEL.ordinal());
 
                 Button returnButton = (Button) findViewById(R.id.buttonReturn);
                 TextView scoreDisplay = (TextView) findViewById(R.id.score_display);

@@ -40,10 +40,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -65,8 +62,18 @@ public class Sheets extends Activity
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
     private List<Object> rowToAdd;
+    private String updateRange;
 
+    final public static int teamID = 10;
+    final private static String spreadsheetID = "1cU8KpdllLNRoxn_nZbWwPMwThzQOofQcb8WrUIaWOZM";
     final public static String EXTRA_SHEETS = "com.example.tapp.SHEETS";
+    final public static String EXTRA_TYPE = "com.example.tapp.TYPE";
+    enum UpdateType {
+        LH_TAP, RH_TAP,
+        LH_SPIRAL, RH_SPIRAL,
+        LH_LEVEL, RH_LEVEL,
+        LH_POP, RH_POP
+    }
 
     /**
      * Create the main activity.
@@ -116,6 +123,15 @@ public class Sheets extends Activity
 
         Intent intent = getIntent();
         ArrayList<String> msg = intent.getStringArrayListExtra(EXTRA_SHEETS);
+        if(msg == null) {
+            finish();
+        }
+
+        int type = intent.getIntExtra(EXTRA_TYPE, 0);
+        updateRange = getUpdateRange(UpdateType.values()[type]);
+        if (updateRange == null) {
+            finish();
+        }
 
         rowToAdd = new ArrayList<>();
         rowToAdd.addAll(msg);
@@ -126,7 +142,28 @@ public class Sheets extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
-
+    private String getUpdateRange(UpdateType type) {
+        switch (type) {
+            case LH_TAP:
+                return "'Tapping Test (LH)'!A2:F";
+            case RH_TAP:
+                return "'Tapping Test (RH)'!A2:F";
+            case LH_SPIRAL:
+                return "'Spiral Test (LH)'!A2:I";
+            case RH_SPIRAL:
+                return "'Spiral Test (RH)'!A2:I";
+            case LH_LEVEL:
+                return "'Level Test (LH)'!A2:F";
+            case RH_LEVEL:
+                return "'Level Test (RH)'!A2:F";
+            case LH_POP:
+                return "'Balloon Test (LH)'!A2:E";
+            case RH_POP:
+                return "'Balloon Test (RH)'!A2:E";
+            default:
+                return null;
+        }
+    }
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -144,8 +181,8 @@ public class Sheets extends Activity
             mOutputText.setText("No network connection available.");
         } else {
             new MakeRequestTask(mCredential).execute();
+            finish();
         }
-        finish();
     }
 
     /**
@@ -366,20 +403,17 @@ public class Sheets extends Activity
          * @throws IOException
          */
         private List<String> getDataFromApi() throws IOException {
-            String spreadsheetId = "1VAW7nT26jyeFZwrhSlb9u8Y2nYeVOerUfml5Yi4hh10";
-            String range = "!A2:F";
-
             List<List<Object>> values = new ArrayList<>();
             values.add(rowToAdd);
 
             ValueRange valueRange = new ValueRange();
             valueRange.setValues(values);
 
-            AppendValuesResponse response = this.mService.spreadsheets().values()
-                    .append(spreadsheetId, range, valueRange)
+            // Call the API
+            this.mService.spreadsheets().values()
+                    .append(spreadsheetID, updateRange, valueRange)
                     .setValueInputOption("RAW")
                     .execute();
-
             return null;
         }
 

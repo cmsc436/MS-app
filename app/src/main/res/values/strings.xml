@@ -10,7 +10,7 @@
 
     <string name="level_start">Start %1$s trial %2$d</string>
 
-    <string name="popper_start">Start trial %1$d</string>
+    <string name="popper_start">Start %1$s trial %2$d</string>
     <string name="popper_view">View results</string>>
     <string name="popper_end">Finish test</string>
 </resources>

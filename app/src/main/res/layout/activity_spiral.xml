@@ -40,14 +40,23 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <view
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/image_view"
         android:layout_below="@+id/textView"
-        android:layout_width="420dp"
-        android:layout_height="420dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/crop_spiral_trans" />
+
+    <view
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         class="com.example.tapp.DrawView"
         android:id="@+id/draw_view"
-        android:background="@drawable/spiral" />
+        android:layout_alignTop="@+id/image_view"
+        android:layout_alignLeft="@+id/image_view"/>
+
+
 
 </RelativeLayout>

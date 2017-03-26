@@ -32,4 +32,9 @@ public class Info extends AppCompatActivity {
         Intent popper = new Intent(this, Popper.class);
         startActivity(popper);
     }
+
+    public void navCurl(View v) {
+        Intent curl = new Intent(this, Curling.class);
+        startActivity(curl);
+    }
 }

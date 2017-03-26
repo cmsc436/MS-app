@@ -92,4 +92,23 @@
         android:layout_alignLeft="@+id/button"
         android:layout_alignStart="@+id/button" />
 
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button4"
+        android:layout_alignStart="@+id/button4"
+        android:layout_below="@+id/button4"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/buttonshape"
+
+        android:minHeight="32dp"
+        android:minWidth="32dp"
+        android:onClick="navCurl"
+        android:shadowColor="#676980"
+        android:shadowRadius="5"
+        android:text="@string/curl_button"
+        android:textColor="#FFFFFF"
+        android:textSize="7pt" />
+
 </RelativeLayout>

@@ -2,9 +2,9 @@ package com.example.tapp;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.provider.MediaStore;
@@ -15,7 +15,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class Spiral extends AppCompatActivity {
+    // TODO: add PER-TRIAL scores and durations
+    private int numTrials = 6;
+    private String hand = "left";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,31 @@ public class Spiral extends AppCompatActivity {
         } else {
             this.savePictureToGallery();
         }
+    }
+
+    private void sendToSheets(int[] scores, int[] durations, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+        ArrayList<String> row = new ArrayList<>();
+        row.add(Integer.toString(Sheets.teamID));
+
+        SimpleDateFormat format;
+        Calendar c = Calendar.getInstance();
+        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        row.add(format.format(c.getTime()));
+
+        row.add("n/a");
+
+
+        for (int i = 0; i < numTrials / 2; i++)
+            row.add(Integer.toString(durations[i]));
+
+        for (int i = 0; i < numTrials / 2; i++)
+            row.add(Integer.toString(scores[i]));
+
+        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        startActivity(sheets);
     }
 
     private void savePictureToGallery() {

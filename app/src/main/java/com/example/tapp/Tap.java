@@ -1,5 +1,6 @@
 package com.example.tapp;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class Tap extends AppCompatActivity {
@@ -21,6 +25,7 @@ public class Tap extends AppCompatActivity {
     private int timersComplete = 0;
     private String hand = "left";
     private int trial = 1;
+    private int numTrials = 6;
 
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
@@ -81,6 +86,14 @@ public class Tap extends AppCompatActivity {
                 timerLabel.setText("And you're done!");
                 countText.setVisibility(View.VISIBLE);
                 countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));
+
+                // TODO: add PER-TRIAL scores
+                int[] lScores = {this.lTotal/3, this.lTotal/3, this.lTotal/3};
+                int[] rScores = {this.rTotal/3, this.rTotal/3, this.rTotal/3};
+
+                sendToSheets(lScores, Sheets.UpdateType.LH_TAP.ordinal());
+                sendToSheets(rScores, Sheets.UpdateType.RH_TAP.ordinal());
+
                 goToMain.setVisibility(View.VISIBLE);
                 break;
         }
@@ -115,6 +128,27 @@ public class Tap extends AppCompatActivity {
                 handleTimerComplete();
             }
         };
+    }
+
+    private void sendToSheets(int[] scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+        ArrayList<String> row = new ArrayList<>();
+        row.add(Integer.toString(Sheets.teamID));
+
+        SimpleDateFormat format;
+        Calendar c = Calendar.getInstance();
+        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        row.add(format.format(c.getTime()));
+
+        row.add("n/a");
+
+        for (int i = 0; i < numTrials / 2; i++)
+            row.add(Integer.toString(scores[i]));
+
+        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        startActivity(sheets);
     }
 
     public void count(View v) {

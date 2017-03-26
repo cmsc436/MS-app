@@ -5,4 +5,24 @@
     android:layout_height="match_parent"
     tools:context="com.example.tapp.Curling">
 
+    <TextView
+        android:id="@+id/curl_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="178dp"
+        android:text="TextView"
+        tools:text="sadfasdfasdfasdf" />
+
+    <Button
+        android:id="@+id/curling_start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="44dp"
+        android:onClick="curlButtonPress"
+        android:text="Button" />
+
 </RelativeLayout>

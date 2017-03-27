@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,19 +81,29 @@ public class Level extends AppCompatActivity {
                 button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
                 Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
                 timer.cancel();
-                this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
+                this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
                 accelerometer.clear();
             } else {
                 rScore = rScore + scoreCache();
-                this.saveCanvasToGallery("Bubble Test", String.format("%s hand: trial %d", hand, trialsComplete));
+                this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
 
                 lScore = lScore / (numTrials/2);
                 rScore = rScore / (numTrials/2);
                 Toast.makeText(getApplicationContext(), "All trials complete!",
                         Toast.LENGTH_LONG).show();
-                button_Start.setText("All trials complete!\n Left: " + lScore + " Right: " + rScore);
+                button_Start.setVisibility(View.INVISIBLE);
+                timer.cancel();
+                accelerometer.clear();
 
-                finish();
+                // display score until exit
+                View accel = findViewById(R.id.accelerometer);
+                accel.setVisibility(View.INVISIBLE);
+
+                Button returnButton = (Button) findViewById(R.id.buttonReturn);
+                TextView scoreDisplay = (TextView) findViewById(R.id.score_display);
+                scoreDisplay.setVisibility(View.VISIBLE);
+                scoreDisplay.setText("Left score: " + lScore + "\nRight score: " + rScore);
+                returnButton.setVisibility(View.VISIBLE);
             }
         }
 
@@ -234,5 +245,9 @@ public class Level extends AppCompatActivity {
                     }
                 });
             }
+        }
+
+        public void returnToMain(View v) {
+            finish();
         }
     }

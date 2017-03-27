@@ -12,8 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="178dp"
-        android:text="TextView"
-        tools:text="@string/trial_start" />
+        android:text="@string/curl_start" />
 
     <Button
         android:id="@+id/curling_start_button"
@@ -22,7 +21,14 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="44dp"
+        android:background="@drawable/buttonshape"
+        android:minHeight="32dp"
+        android:minWidth="32dp"
         android:onClick="curlButtonPress"
-        android:text="Button" />
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:text="@string/trial_start"
+        android:textColor="#FFFFFF" />
 
 </RelativeLayout>

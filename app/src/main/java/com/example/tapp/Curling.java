@@ -103,17 +103,17 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
             }
             if (curlCount >= curlGoal) {
                 this.stopSensor();
-                long endTime = System.nanoTime();
+                long elapsedTime = System.nanoTime() - startTime;
                 if (trialsComplete % 2 == 0) {
-                    lCurlTimes[trialsComplete / 2] = endTime - startTime;
+                    lCurlTimes[trialsComplete / 2] = elapsedTime;
                 } else {
-                    rCurlTimes[trialsComplete / 2] = endTime - startTime;
+                    rCurlTimes[trialsComplete / 2] = elapsedTime;
                 }
                 trialsComplete++;
                 curlCount = 0;
                 curlButton.setVisibility(View.VISIBLE);
                 this.setButtonTrialText();
-                // TODO set instructions for next trials in textView
+                curlText.setText(String.format(Locale.getDefault(), "Elapsed time: %.4f seconds", elapsedTime / 1000000000.0));
             }
         }
     }

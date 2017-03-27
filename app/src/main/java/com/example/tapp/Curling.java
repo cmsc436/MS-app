@@ -47,8 +47,16 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         rCurlTimes = new long[3];
         curlText = (TextView) findViewById(R.id.curl_text);
         curlButton = (Button) findViewById(R.id.curling_start_button);
-        // TODO set initial button text
+        this.setButtonTrialText();
         // TODO set initial textView text
+    }
+
+    private void setButtonTrialText() {
+        if (trialsComplete < numTrials) {
+            curlButton.setText(String.format(getString(R.string.trial_start), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
+        } else {
+            curlButton.setText("View Results");
+        }
     }
 
     private void startSensor() {
@@ -104,7 +112,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
                 trialsComplete++;
                 curlCount = 0;
                 curlButton.setVisibility(View.VISIBLE);
-                // TODO set new button text
+                this.setButtonTrialText();
                 // TODO set instructions for next trials in textView
             }
         }

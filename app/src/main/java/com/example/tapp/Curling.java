@@ -29,6 +29,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     private long startTime;
     TextView curlText;
     Button curlButton;
+    private boolean sensorIsRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,22 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
         // TODO set initial textView text
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (sensorIsRegistered) {
+            this.startSensor();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (sensorIsRegistered) {
+            this.stopSensor();
+        }
     }
 
     private void setButtonTrialText() {
@@ -82,6 +99,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
             isFaceUp = false;
             curlCount = 0;
             this.startSensor();
+            sensorIsRegistered = true;
         } else {
             // TODO write data to Google Sheets and display results
         }
@@ -103,6 +121,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
             }
             if (curlCount >= curlGoal) {
                 this.stopSensor();
+                sensorIsRegistered = false;
                 long elapsedTime = System.nanoTime() - startTime;
                 if (trialsComplete % 2 == 0) {
                     lCurlTimes[trialsComplete / 2] = elapsedTime;

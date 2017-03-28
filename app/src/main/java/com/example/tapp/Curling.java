@@ -1,6 +1,7 @@
 package com.example.tapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class Curling extends AppCompatActivity implements SensorEventListener {
@@ -101,7 +105,11 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
             this.startSensor();
             sensorIsRegistered = true;
         } else {
-            // TODO write data to Google Sheets and display results
+            long[] lScores = {this.lCurlTimes[0], this.lCurlTimes[1], this.lCurlTimes[2]};
+            long[] rScores = {this.rCurlTimes[0], this.rCurlTimes[1], this.rCurlTimes[2]};
+
+            sendToSheets(lScores, Sheets.UpdateType.LH_CURL.ordinal());
+            sendToSheets(rScores, Sheets.UpdateType.RH_CURL.ordinal());
         }
     }
 
@@ -140,5 +148,26 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    private void sendToSheets(long[] scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+        ArrayList<String> row = new ArrayList<>();
+        row.add(Integer.toString(Sheets.teamID));
+
+        SimpleDateFormat format;
+        Calendar c = Calendar.getInstance();
+        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        row.add(format.format(c.getTime()));
+
+        row.add("n/a");
+
+        for (int i = 0; i < numTrials / 2; i++)
+            row.add(Long.toString(scores[i]));
+
+        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        startActivity(sheets);
     }
 }

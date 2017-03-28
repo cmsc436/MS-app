@@ -72,7 +72,8 @@ public class Sheets extends Activity
         LH_TAP, RH_TAP,
         LH_SPIRAL, RH_SPIRAL,
         LH_LEVEL, RH_LEVEL,
-        LH_POP, RH_POP
+        LH_POP, RH_POP, RH_CURL,
+        LH_CURL
     }
 
     /**
@@ -160,6 +161,10 @@ public class Sheets extends Activity
                 return "'Balloon Test (LH)'!A2:E";
             case RH_POP:
                 return "'Balloon Test (RH)'!A2:E";
+            case RH_CURL:
+                return "'Curling Test (RH)'!A2:F";
+            case LH_CURL:
+                return "'Curling Test (LH)'!A2:F";
             default:
                 return null;
         }

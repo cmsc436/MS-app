@@ -20,15 +20,15 @@
         android:shadowDy="0"
         android:shadowRadius="5"
         android:layout_marginBottom="17dp"
-        android:layout_above="@+id/button2"
-        android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2" />
+        android:layout_above="@+id/spiral_info_button"
+        android:layout_alignLeft="@+id/spiral_info_button"
+        android:layout_alignStart="@+id/spiral_info_button" />
 
     <Button
         android:text="@string/spiral_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button2"
+        android:id="@+id/spiral_info_button"
         android:onClick="navSpiral"
         android:minWidth="32dp"
         android:minHeight="32dp"
@@ -61,8 +61,8 @@
         android:shadowColor="#676980"
         android:shadowRadius="5"
         android:layout_marginTop="17dp"
-        android:layout_below="@+id/button2"
-        android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2" />
+        android:layout_below="@+id/spiral_info_button"
+        android:layout_alignLeft="@+id/spiral_info_button"
+        android:layout_alignStart="@+id/spiral_info_button" />
 
 </RelativeLayout>

@@ -4,6 +4,7 @@
     <string name="spiral_button">Start spiral test</string>
     <string name="level_button">Start level test</string>
     <string name="popper_button">Start popping test</string>>
+    <string name="curl_button">Start curling test</string>>
 
     <string name="save_button">Save spiral</string>
     <string name="spiral_info">Trace the spiral</string>
@@ -13,4 +14,7 @@
     <string name="popper_start">Start %1$s trial %2$d</string>
     <string name="popper_view">View results</string>>
     <string name="popper_end">Finish test</string>
+
+    <string name="trial_start">Start %1$s trial %2$d</string>
+    <string name="curl_start">Press the button to start curling.</string>
 </resources>

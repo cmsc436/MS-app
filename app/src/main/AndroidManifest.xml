@@ -24,9 +24,8 @@
         <activity android:name=".Spiral" />
         <activity android:name=".Level" />
         <activity android:name=".Popper" />
-        <activity android:name=".Sheets">
-
-        </activity>
+        <activity android:name=".Sheets"></activity>
+        <activity android:name=".Curling"></activity>
     </application>
 
 </manifest>

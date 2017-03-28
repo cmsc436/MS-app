@@ -42,6 +42,9 @@ public class Level extends AppCompatActivity {
         int trialsComplete;
         String hand = "left";
         static int numTrials = 6;
+        int[] lScores = new int[numTrials/2];
+        int[] rScores = new int[numTrials/2];
+        int trial = 0;
         Button button_Start;
 
         int lScore = 0;
@@ -90,14 +93,19 @@ public class Level extends AppCompatActivity {
         private void handleTimerComplete() {
             trialsComplete++;
             if (trialsComplete < numTrials) {
+                int temp;
                 switch (hand) {
                     case "right":
-                        rScore = rScore + this.scoreCache();
+                        temp = this.scoreCache();
+                        rScores[(trialsComplete/2)-1] = temp;
+                        rScore = rScore + temp;
 
                         hand = "left";
                         break;
                     case "left":
-                        lScore = lScore + this.scoreCache();
+                        temp = this.scoreCache();
+                        lScores[(trialsComplete/2)] = temp;
+                        lScore = lScore + temp;
 
                         hand = "right";
                         break;
@@ -110,7 +118,9 @@ public class Level extends AppCompatActivity {
                 this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
                 accelerometer.clear();
             } else {
-                rScore = rScore + scoreCache();
+                int temp = this.scoreCache();
+                rScores[(trialsComplete/2)-1] = temp;
+                rScore = rScore + temp;
                 this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
 
                 lScore = lScore / (numTrials/2);
@@ -124,10 +134,6 @@ public class Level extends AppCompatActivity {
                 // display score until exit
                 View accel = findViewById(R.id.accelerometer);
                 accel.setVisibility(View.INVISIBLE);
-
-                // TODO: add PER-TRIAL scores
-                int[] lScores = {lScore, lScore, lScore};
-                int[] rScores = {rScore, rScore, rScore};
 
                 sendToSheets(lScores, Sheets.UpdateType.LH_LEVEL.ordinal());
                 sendToSheets(rScores, Sheets.UpdateType.RH_LEVEL.ordinal());

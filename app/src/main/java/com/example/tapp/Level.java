@@ -1,6 +1,7 @@
 package com.example.tapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,6 +19,10 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,7 +41,7 @@ public class Level extends AppCompatActivity {
 
         int trialsComplete;
         String hand = "left";
-        static int numTrials = 4;
+        static int numTrials = 6;
         Button button_Start;
 
         int lScore = 0;
@@ -59,6 +64,27 @@ public class Level extends AppCompatActivity {
             };
 
             trialsComplete = 0;
+        }
+
+        private void sendToSheets(int[] scores, int sheet) {
+            // Send data to sheets
+            Intent sheets = new Intent(this, Sheets.class);
+            ArrayList<String> row = new ArrayList<>();
+            row.add(Integer.toString(Sheets.teamID));
+
+            SimpleDateFormat format;
+            Calendar c = Calendar.getInstance();
+            format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+            row.add(format.format(c.getTime()));
+
+            row.add("n/a");
+
+            for (int i = 0; i < numTrials / 2; i++)
+                row.add(Integer.toString(scores[i]));
+
+            sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+            sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+            startActivity(sheets);
         }
 
         private void handleTimerComplete() {
@@ -98,6 +124,13 @@ public class Level extends AppCompatActivity {
                 // display score until exit
                 View accel = findViewById(R.id.accelerometer);
                 accel.setVisibility(View.INVISIBLE);
+
+                // TODO: add PER-TRIAL scores
+                int[] lScores = {lScore, lScore, lScore};
+                int[] rScores = {rScore, rScore, rScore};
+
+                sendToSheets(lScores, Sheets.UpdateType.LH_LEVEL.ordinal());
+                sendToSheets(rScores, Sheets.UpdateType.RH_LEVEL.ordinal());
 
                 Button returnButton = (Button) findViewById(R.id.buttonReturn);
                 TextView scoreDisplay = (TextView) findViewById(R.id.score_display);

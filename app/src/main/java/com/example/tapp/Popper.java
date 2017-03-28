@@ -1,5 +1,6 @@
 package com.example.tapp;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -13,22 +14,26 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
 public class Popper extends AppCompatActivity implements Balloon.BalloonListener {
 
-    private int numTrials = 3;
+    private int numTrials = 6;
     private int numBalloons = 10;
-    private long reactionTimes[][]; // times in nanoseconds
+    private long lReactionTimes[][]; // times in nanoseconds
+    private long rReactionTimes[][]; // times in nanoseconds
     private long startTime;
     private int trialsComplete;
     private int balloonCount;
     private int[] mBalloonColors = new int[3];
     private ViewGroup mContentView;
     private int mScreenWidth, mScreenHeight;
-
+    private String hand = "left";
     Button buttonStart;
 
     @Override
@@ -37,9 +42,10 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         setContentView(R.layout.activity_popper);
         trialsComplete = 0;
         balloonCount = 0;
-        reactionTimes = new long[numTrials][numBalloons];
+        lReactionTimes = new long[numTrials][numBalloons];
+        rReactionTimes = new long[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
-        buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
+        buttonStart.setText(String.format(getString(R.string.popper_start), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
         mBalloonColors[1] = Color.argb(255, 0, 255, 0);
         mBalloonColors[2] = Color.argb(255, 0, 0, 255);
@@ -60,26 +66,54 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         }
     }
 
+    private void sendToSheets(double avg, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+        ArrayList<String> row = new ArrayList<>();
+        row.add(Integer.toString(Sheets.teamID));
+
+        SimpleDateFormat format;
+        Calendar c = Calendar.getInstance();
+        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        row.add(format.format(c.getTime()));
+
+        row.add("n/a");
+
+        row.add(Integer.toString(numBalloons * numTrials / 2));
+
+        row.add(Double.toString(avg));
+
+        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        startActivity(sheets);
+    }
+
     public void setStart(View v) {
         if (trialsComplete < numTrials) {
             balloonCount = 0;
             buttonStart.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), String.format(Locale.getDefault(), "Trial %d started!", trialsComplete + 1), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), String.format(Locale.getDefault(), "Trial %s %d started!", hand, (trialsComplete/2) + 1), Toast.LENGTH_SHORT).show();
             launchBalloon();
         } else if (trialsComplete == numTrials) {
-            double[] averages = new double[numTrials];
+            // Compute averages and print
+            double lAverage = 0;
+            double rAverage = 0;
             for (int i = 0; i < numTrials; i++) {
-                double sum = 0;
                 for(int j = 0; j < numBalloons; j++) {
-                    sum += reactionTimes[i][j];
+                    lAverage += lReactionTimes[i][j];
+                    rAverage += rReactionTimes[i][j];
                 }
-                averages[i] = sum / numBalloons;
             }
+            lAverage /= (numTrials * numBalloons);
+            rAverage /= (numTrials * numBalloons);
+
+            sendToSheets(lAverage, Sheets.UpdateType.LH_POP.ordinal());
+            sendToSheets(rAverage, Sheets.UpdateType.RH_POP.ordinal());
+
+            // Print averages for user
             String resString = "";
-            for (int i = 0; i < numTrials; i++) {
-                resString += String.format(Locale.US, "Trial %d average: %.2f sec\n", i+1,
-                        (averages[i] / 1000000000));
-            }
+            resString += String.format(Locale.US, "Left hand average: %.2f sec\n", lAverage / 1000000000);
+            resString += String.format(Locale.US, "Right hand average: %.2f sec\n", rAverage / 1000000000);
             TextView results = (android.widget.TextView) findViewById(R.id.popResults);
             results.setText(resString);
             buttonStart.setText(getString(R.string.popper_end));
@@ -103,7 +137,15 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         mContentView.removeView(balloon);
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
-        reactionTimes[trialsComplete][balloonCount] = elapsedTime;
+        switch (hand) {
+            case "right":
+                rReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                break;
+            case "left":
+                lReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                break;
+        }
+
         balloonCount++;
         if (balloonCount >= numBalloons) {
             trialsComplete++;
@@ -111,7 +153,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             if (trialsComplete == numTrials) {
                 buttonStart.setText(getString(R.string.popper_view));
             } else {
-                buttonStart.setText(String.format(getString(R.string.popper_start), trialsComplete + 1));
+                hand = (hand.equals("left"))? "right" : "left";
+                buttonStart.setText(String.format(getString(R.string.popper_start), hand, (trialsComplete/2) + 1));
             }
         } else {
             Random random = new Random(new Date().getTime());

@@ -164,7 +164,7 @@ public class Sheets extends Activity
             case RH_CURL:
                 return "'Curling Test (RH)'!A2:F";
             case LH_CURL:
-                return "'Curling Test (RH)'!A2:F";
+                return "'Curling Test (LH)'!A2:F";
             default:
                 return null;
         }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -18,26 +19,29 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
-=======
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
->>>>>>> refs/remotes/origin/master
 
 public class Spiral extends AppCompatActivity {
-    // TODO: add PER-TRIAL scores and durations
     private int numTrials = 6;
     private String hand = "left";
 
-    Bitmap user_drawn;
+    private int trial = 1;
+    private int[] lScores = new int[numTrials/2];
+    private int[] rScores = new int[numTrials/2];
+    private long[] lTimes = new long[numTrials/2];
+    private long[] rTimes = new long[numTrials/2];
+    private long startTime;
+    private long endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,17 +61,46 @@ public class Spiral extends AppCompatActivity {
         }
     }
 
+    public void begin (View v) {
+        View save = findViewById(R.id.button3);
+        save.setVisibility(View.VISIBLE);
+        View draw = findViewById(R.id.draw_view);
+        draw.setVisibility(View.VISIBLE);
+        View text = findViewById(R.id.textView);
+        text.setVisibility(View.VISIBLE);
+        View start = findViewById(R.id.start_but);
+        start.setVisibility(View.INVISIBLE);
+        startTime = System.nanoTime();
+    }
+
+    public void next (View v) {
+        View save = findViewById(R.id.button3);
+        save.setVisibility(View.VISIBLE);
+        View next = findViewById(R.id.next_but);
+        next.setVisibility(View.INVISIBLE);
+        View draw = findViewById(R.id.draw_view);
+        draw.setVisibility(View.VISIBLE);
+        startTime = System.nanoTime();
+    }
+
     public void saveSpiral(View v) {
+        endTime = System.nanoTime();
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         } else {
             this.savePictureToGallery();
+            View save = findViewById(R.id.button3);
+            save.setVisibility(View.INVISIBLE);
+            View next = findViewById(R.id.next_but);
+            next.setVisibility(View.VISIBLE);
+            View draw = findViewById(R.id.draw_view);
+            draw.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void sendToSheets(int[] scores, int[] durations, int sheet) {
+    private void sendToSheets(int[] scores, long[] durations, int sheet) {
         // Send data to sheets
         Intent sheets = new Intent(this, Sheets.class);
         ArrayList<String> row = new ArrayList<>();
@@ -82,10 +115,10 @@ public class Spiral extends AppCompatActivity {
 
 
         for (int i = 0; i < numTrials / 2; i++)
-            row.add(Integer.toString(durations[i]));
+            row.add(Long.toString(durations[i]));
 
         for (int i = 0; i < numTrials / 2; i++)
-            row.add(Integer.toString(scores[i]));
+            row.add(Long.toString(scores[i]));
 
         sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
@@ -95,7 +128,7 @@ public class Spiral extends AppCompatActivity {
     private void savePictureToGallery() {
         View drawing = (View) findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
-        user_drawn = drawing.getDrawingCache();
+        Bitmap user_drawn = drawing.getDrawingCache();
 
         Bitmap bmp1 = BitmapFactory.decodeResource(getResources(), R.drawable.cropped_spiral);
         Bitmap bmp2 = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), Bitmap.Config.ARGB_8888);
@@ -115,23 +148,63 @@ public class Spiral extends AppCompatActivity {
         CharSequence text = "Saved image to " + savedImageURL;
         int duration = Toast.LENGTH_SHORT;
         Toast.makeText(context, text, duration).show();
+        drawing.setDrawingCacheEnabled(false);
         displayScore();
     }
 
     private void displayScore() {
 
         int score = score_spiral();
+        if (hand == "left") {
+            lScores[trial-1] = score;
+            lTimes[trial-1] = (endTime-startTime)/(1000000);
+        } else {
+            rScores[trial-1] = score;
+            rTimes[trial-1] = (endTime-startTime)/(1000000);
+        }
         TextView text = (TextView) findViewById(R.id.textView);
         text.setText("Score: " + score);
-        new Timer().schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                },
-                2000
-        );
+
+        DrawView drawing = (DrawView) findViewById(R.id.draw_view);
+        drawing.clear();
+        if (trial < 3) {
+            new Timer().schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            trial++;
+                        }
+                    },
+                    2000
+            );
+        } else if (hand == "left") {
+            new Timer().schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            hand = "right";
+                            trial = 1;
+                        }
+                    },
+                    2000
+            );
+        } else {
+            Context context = getApplicationContext();
+            CharSequence done = "All trials complete!";
+            int duration = Toast.LENGTH_SHORT;
+            Toast.makeText(context, done, duration).show();
+            sendToSheets(lScores, lTimes, Sheets.UpdateType.LH_SPIRAL.ordinal());
+            sendToSheets(rScores, rTimes, Sheets.UpdateType.RH_SPIRAL.ordinal());
+            new Timer().schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    },
+                    2000
+            );
+        }
     }
 
 
@@ -139,6 +212,10 @@ public class Spiral extends AppCompatActivity {
     private int score_spiral() {
 
         Bitmap original = BitmapFactory.decodeResource(getResources(), R.drawable.cropped_spiral);
+
+        View drawing = (View) findViewById(R.id.draw_view);
+        drawing.setDrawingCacheEnabled(true);
+        Bitmap user_drawn = drawing.getDrawingCache();
 
         double score = 0;
 
@@ -200,6 +277,8 @@ public class Spiral extends AppCompatActivity {
         } else {
             score = 0;
         }
+
+        drawing.setDrawingCacheEnabled(false);
 
         return (int) round(score);
     }

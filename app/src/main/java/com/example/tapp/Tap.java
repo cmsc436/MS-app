@@ -26,6 +26,8 @@ public class Tap extends AppCompatActivity {
     private String hand = "left";
     private int trial = 1;
     private int numTrials = 6;
+    int[] lScores = new int[numTrials/2];
+    int[] rScores = new int[numTrials/2];
 
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
@@ -43,6 +45,11 @@ public class Tap extends AppCompatActivity {
                 countText.setText("");
                 tapRegion.setVisibility(View.VISIBLE);
                 this.waitingTimer.start();
+                if (hand == "left") {
+                    lScores[trial-1] = lCount;
+                } else {
+                    rScores[trial-1] = rCount;
+                }
                 lTotal += lCount;
                 lCount = 0;
                 rTotal += rCount;
@@ -80,16 +87,13 @@ public class Tap extends AppCompatActivity {
                 break;
             case 5:
                 // Inform user that the tapping is finished.
+                rScores[trial-1] = rCount;
                 rTotal += rCount;
                 rCount = 0;
                 tapRegion.setVisibility(View.INVISIBLE);
                 timerLabel.setText("And you're done!");
                 countText.setVisibility(View.VISIBLE);
                 countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));
-
-                // TODO: add PER-TRIAL scores
-                int[] lScores = {this.lTotal/3, this.lTotal/3, this.lTotal/3};
-                int[] rScores = {this.rTotal/3, this.rTotal/3, this.rTotal/3};
 
                 sendToSheets(lScores, Sheets.UpdateType.LH_TAP.ordinal());
                 sendToSheets(rScores, Sheets.UpdateType.RH_TAP.ordinal());

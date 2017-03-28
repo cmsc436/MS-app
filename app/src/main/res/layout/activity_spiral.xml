@@ -13,11 +13,29 @@
     tools:context="com.example.tapp.Spiral">
 
     <Button
+        android:text="Start!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_but"
+        android:onClick="begin"
+
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
         android:text="@string/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button3"
         android:onClick="saveSpiral"
+        android:visibility="invisible"
 
 
         android:minWidth="32dp"
@@ -28,7 +46,26 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="427dp" />
+
+    <Button
+        android:text="Next trial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/next_but"
+        android:onClick="next"
+        android:visibility="invisible"
+
+
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="427dp" />
 
     <TextView
@@ -38,7 +75,8 @@
         android:id="@+id/textView"
         android:textSize="8pt"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
     <ImageView
         android:layout_width="300dp"
@@ -55,7 +93,8 @@
         class="com.example.tapp.DrawView"
         android:id="@+id/draw_view"
         android:layout_alignTop="@+id/image_view"
-        android:layout_alignLeft="@+id/image_view"/>
+        android:layout_alignLeft="@+id/image_view"
+        android:visibility="invisible" />
 
 
 

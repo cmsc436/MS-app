@@ -28,11 +28,6 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
-
 public class Spiral extends AppCompatActivity {
     private int numTrials = 6;
     private String hand = "left";
@@ -105,25 +100,16 @@ public class Spiral extends AppCompatActivity {
     private void sendToSheets(int[] scores, long[] durations, int sheet) {
         // Send data to sheets
         Intent sheets = new Intent(this, Sheets.class);
-        ArrayList<String> row = new ArrayList<>();
-        row.add(Integer.toString(Sheets.teamID));
 
-        SimpleDateFormat format;
-        Calendar c = Calendar.getInstance();
-        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-        row.add(format.format(c.getTime()));
-
-        row.add("n/a");
-
-
+        float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
-            row.add(Long.toString(durations[i]));
+            avg += scores[i];
+        avg /= numTrials / 2;
 
-        for (int i = 0; i < numTrials / 2; i++)
-            row.add(Long.toString(scores[i]));
-
-        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_VALUE, avg);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
         startActivity(sheets);
     }
 

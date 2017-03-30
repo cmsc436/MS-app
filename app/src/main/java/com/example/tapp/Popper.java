@@ -16,9 +16,6 @@ import android.widget.Toast;
 
 import com.example.sheets436.Sheets;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -71,22 +68,11 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     private void sendToSheets(double avg, int sheet) {
         // Send data to sheets
         Intent sheets = new Intent(this, Sheets.class);
-        ArrayList<String> row = new ArrayList<>();
-        row.add(Integer.toString(Sheets.teamID));
 
-        SimpleDateFormat format;
-        Calendar c = Calendar.getInstance();
-        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-        row.add(format.format(c.getTime()));
-
-        row.add("n/a");
-
-        row.add(Integer.toString(numBalloons * numTrials / 2));
-
-        row.add(Double.toString(avg));
-
-        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+        sheets.putExtra(Sheets.EXTRA_VALUE, (float)avg);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
         startActivity(sheets);
     }
 
@@ -109,8 +95,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             lAverage /= (numTrials * numBalloons);
             rAverage /= (numTrials * numBalloons);
 
-            sendToSheets(lAverage, Sheets.UpdateType.LH_POP.ordinal());
-            sendToSheets(rAverage, Sheets.UpdateType.RH_POP.ordinal());
+            sendToSheets(lAverage / 1000000000, Sheets.UpdateType.LH_POP.ordinal());
+            sendToSheets(rAverage / 1000000000, Sheets.UpdateType.RH_POP.ordinal());
 
             // Print averages for user
             String resString = "";

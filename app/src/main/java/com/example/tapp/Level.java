@@ -21,10 +21,6 @@ import android.widget.TextView;
 
 import com.example.sheets436.Sheets;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -74,21 +70,16 @@ public class Level extends AppCompatActivity {
         private void sendToSheets(int[] scores, int sheet) {
             // Send data to sheets
             Intent sheets = new Intent(this, Sheets.class);
-            ArrayList<String> row = new ArrayList<>();
-            row.add(Integer.toString(Sheets.teamID));
 
-            SimpleDateFormat format;
-            Calendar c = Calendar.getInstance();
-            format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-            row.add(format.format(c.getTime()));
-
-            row.add("n/a");
-
+            float avg = 0;
             for (int i = 0; i < numTrials / 2; i++)
-                row.add(Integer.toString(scores[i]));
+                avg += scores[i];
+            avg /= numTrials / 2;
 
-            sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
+            sheets.putExtra(Sheets.EXTRA_VALUE, avg);
+            sheets.putExtra(Sheets.EXTRA_USER, R.string.userID);
             sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
             startActivity(sheets);
         }
 

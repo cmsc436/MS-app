@@ -70,7 +70,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         Intent sheets = new Intent(this, Sheets.class);
 
         sheets.putExtra(Sheets.EXTRA_VALUE, (float)avg);
-        sheets.putExtra(Sheets.EXTRA_USER, R.string.userID);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
         startActivity(sheets);

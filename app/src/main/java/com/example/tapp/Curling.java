@@ -159,7 +159,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         avg /= numTrials / 2;
 
         sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-        sheets.putExtra(Sheets.EXTRA_USER, R.string.userID);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
         startActivity(sheets);

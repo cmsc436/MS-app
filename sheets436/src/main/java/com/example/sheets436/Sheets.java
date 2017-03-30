@@ -1,4 +1,4 @@
-package com.example.tapp;
+package com.example.sheets436;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -68,7 +68,7 @@ public class Sheets extends Activity
     final private static String spreadsheetID = "1cU8KpdllLNRoxn_nZbWwPMwThzQOofQcb8WrUIaWOZM";
     final public static String EXTRA_SHEETS = "com.example.tapp.SHEETS";
     final public static String EXTRA_TYPE = "com.example.tapp.TYPE";
-    enum UpdateType {
+    public enum UpdateType {
         LH_TAP, RH_TAP,
         LH_SPIRAL, RH_SPIRAL,
         LH_LEVEL, RH_LEVEL,

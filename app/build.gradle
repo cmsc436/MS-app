@@ -19,7 +19,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.example.tapp"
-        minSdkVersion 25
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -48,11 +48,10 @@ dependencies {
     compile('com.google.apis:google-api-services-sheets:v4-rev463-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.google.android.gms:play-services-auth:10.2.1'
     compile 'pub.devrel:easypermissions:0.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
-    compile project(":sheets436")
     testCompile 'junit:junit:4.12'
 }

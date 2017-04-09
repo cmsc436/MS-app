@@ -2,17 +2,19 @@ package com.example.tapp;
 
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Locale;
 
-public class Tap extends AppCompatActivity {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Tap extends AppCompatActivity implements Sheets.Host {
 
     int lCount = 0;
     int rCount = 0;
@@ -27,6 +29,8 @@ public class Tap extends AppCompatActivity {
     private int numTrials = 6;
     int[] lScores = new int[numTrials/2];
     int[] rScores = new int[numTrials/2];
+
+    private Sheets sheet;
 
     private void handleTimerComplete() {
         final TextView timerLabel = (TextView) findViewById(R.id.timerView);
@@ -169,5 +173,40 @@ public class Tap extends AppCompatActivity {
 
     public void onClick(View v) {
         finish();
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -15,20 +15,21 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Timer;
 import java.util.TimerTask;
+
+import edu.umd.cmsc436.sheets.Sheets;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
-public class Spiral extends AppCompatActivity {
+public class Spiral extends AppCompatActivity implements Sheets.Host {
     private int numTrials = 6;
     private String hand = "left";
 
@@ -40,22 +41,12 @@ public class Spiral extends AppCompatActivity {
     private long startTime;
     private long endTime;
 
+    private Sheets sheet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spiral);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 0:
-                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
-                    this.savePictureToGallery();
-                break;
-            default:
-                break;
-        }
     }
 
     public void begin (View v) {
@@ -269,6 +260,48 @@ public class Spiral extends AppCompatActivity {
         drawing.setDrawingCacheEnabled(false);
 
         return (int) round(score);
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                    this.savePictureToGallery();
+                break;
+            default:
+                this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 
 }

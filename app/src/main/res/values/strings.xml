@@ -17,4 +17,7 @@
 
     <string name="trial_start">Start %1$s trial %2$d</string>
     <string name="curl_start">Press the button to start curling.</string>
+
+    <string name="class_sheet">1YvI3CjS4ZlZQDYi5PaiA7WGGcoCsZfLoSFM0IdvdbDU</string>
+    <string name="private_sheet"></string>
 </resources>

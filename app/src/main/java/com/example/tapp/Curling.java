@@ -6,17 +6,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Locale;
 
-public class Curling extends AppCompatActivity implements SensorEventListener {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Curling extends AppCompatActivity implements SensorEventListener, Sheets.Host {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -33,6 +35,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     TextView curlText;
     Button curlButton;
     private boolean sensorIsRegistered = false;
+    private Sheets sheet;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
         // TODO set initial textView text
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
     @Override
@@ -163,5 +169,40 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
         startActivity(sheets);
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

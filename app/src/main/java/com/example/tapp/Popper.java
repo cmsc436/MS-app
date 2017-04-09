@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -14,13 +16,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-public class Popper extends AppCompatActivity implements Balloon.BalloonListener {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Popper extends AppCompatActivity implements Balloon.BalloonListener, Sheets.Host {
 
     private int numTrials = 6;
     private int numBalloons = 10;
@@ -34,6 +36,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     private int mScreenWidth, mScreenHeight;
     private String hand = "left";
     Button buttonStart;
+
+    private Sheets sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,5 +156,40 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 }
             }, random.nextInt(1000));
         }
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

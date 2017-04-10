@@ -48,7 +48,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         lReactionTimes = new long[numTrials][numBalloons];
         rReactionTimes = new long[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
-        buttonStart.setText(String.format(getString(R.string.start_trial), hand, trialsComplete + 1));
+        buttonStart.setText(String.format(getString(R.string.trial_start), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
         mBalloonColors[1] = Color.argb(255, 0, 255, 0);
         mBalloonColors[2] = Color.argb(255, 0, 0, 255);
@@ -104,7 +104,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             resString += String.format(Locale.US, "Right hand average: %.2f sec\n", rAverage / 1000000000);
             TextView results = (android.widget.TextView) findViewById(R.id.popResults);
             results.setText(resString);
-            buttonStart.setText(getString(R.string.popper_end));
+            buttonStart.setText(getString(R.string.test_end));
             trialsComplete++;
         } else {
             finish();
@@ -142,7 +142,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 buttonStart.setText(getString(R.string.results_view));
             } else {
                 hand = (hand.equals("left"))? "right" : "left";
-                buttonStart.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
+                buttonStart.setText(String.format(getString(R.string.trial_start), hand, (trialsComplete/2) + 1));
             }
         } else {
             Random random = new Random(new Date().getTime());

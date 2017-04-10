@@ -285,16 +285,23 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
         Log.i(getClass().getSimpleName(), "Done");
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+      @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 0:
-                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     this.savePictureToGallery();
+                    View save = findViewById(R.id.button3);
+                    save.setVisibility(View.INVISIBLE);
+                    View next = findViewById(R.id.next_but);
+                    next.setVisibility(View.VISIBLE);
+                    View draw = findViewById(R.id.draw_view);
+                    draw.setVisibility(View.INVISIBLE);
+                }
                 break;
             default:
                 this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
         }
     }
 

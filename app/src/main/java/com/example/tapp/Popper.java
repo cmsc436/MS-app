@@ -45,8 +45,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         setContentView(R.layout.activity_popper);
         trialsComplete = 0;
         balloonCount = 0;
-        lReactionTimes = new long[numTrials][numBalloons];
-        rReactionTimes = new long[numTrials][numBalloons];
+        lReactionTimes = new long[numTrials/2][numBalloons];
+        rReactionTimes = new long[numTrials/2][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
         buttonStart.setText(String.format(getString(R.string.trial_start), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
@@ -88,9 +88,9 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             // Compute averages and print
             double lAverage = 0;
             double rAverage = 0;
-            float lTrialAverages[] = new float[numTrials];
-            float rTrialAverages[] = new float[numTrials];
-            for (int i = 0; i < numTrials; i++) {
+            float lTrialAverages[] = new float[numTrials/2];
+            float rTrialAverages[] = new float[numTrials/2];
+            for (int i = 0; i < numTrials/2; i++) {
                 for(int j = 0; j < numBalloons; j++) {
                     lAverage += lReactionTimes[i][j];
                     rAverage += rReactionTimes[i][j];
@@ -135,10 +135,10 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         long elapsedTime = endTime - startTime;
         switch (hand) {
             case "right":
-                rReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                rReactionTimes[trialsComplete/2][balloonCount] = elapsedTime;
                 break;
             case "left":
-                lReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                lReactionTimes[trialsComplete/2][balloonCount] = elapsedTime;
                 break;
         }
 

@@ -6,6 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 
 public class Info extends AppCompatActivity {
+    public static final int LIB_ACCOUNT_NAME_REQUEST_CODE = 1001;
+    public static final int LIB_AUTHORIZATION_REQUEST_CODE = 1002;
+    public static final int LIB_PERMISSION_REQUEST_CODE = 1003;
+    public static final int LIB_PLAY_SERVICES_REQUEST_CODE = 1004;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

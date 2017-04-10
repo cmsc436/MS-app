@@ -11,10 +11,12 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,16 +25,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.example.tapp.R.id.textView;
+import edu.umd.cmsc436.sheets.Sheets;
+
 import static java.lang.Math.atan2;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
-
-public class Spiral extends AppCompatActivity {
+public class Spiral extends AppCompatActivity implements Sheets.Host {
     private int numTrials = 6;
     private String hand = "left";
 
@@ -44,10 +43,14 @@ public class Spiral extends AppCompatActivity {
     private long startTime;
     private long endTime;
 
+    private Sheets sheet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spiral);
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
     @Override
@@ -110,33 +113,18 @@ public class Spiral extends AppCompatActivity {
         }
     }
 
-    private void sendToSheets(int[] scores, long[] durations, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-        ArrayList<String> row = new ArrayList<>();
-        row.add(Integer.toString(Sheets.teamID));
-
-        SimpleDateFormat format;
-        Calendar c = Calendar.getInstance();
-        format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-        row.add(format.format(c.getTime()));
-
-        row.add("n/a");
-
-
+    private void sendToSheets(int[] scores, long[] durations, Sheets.TestType type) {
+        // Compute the average across all trials
+        float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
-            row.add(Long.toString(durations[i]));
-
-        for (int i = 0; i < numTrials / 2; i++)
-            row.add(Long.toString(scores[i]));
-
-        sheets.putStringArrayListExtra(Sheets.EXTRA_SHEETS, row);
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-        startActivity(sheets);
+            avg += scores[i];
+        avg /= numTrials / 2;
+        // Send to the central sheet
+        sheet.writeData(type, getString(R.string.userID), avg);
     }
 
     private void savePictureToGallery() {
-        View drawing = (View) findViewById(R.id.draw_view);
+        View drawing = findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
         Bitmap user_drawn = drawing.getDrawingCache();
 
@@ -165,7 +153,7 @@ public class Spiral extends AppCompatActivity {
     private void displayScore() {
 
         int score = score_spiral();
-        if (hand == "left") {
+        if (hand.equals("left")) {
             lScores[trial-1] = score;
             lTimes[trial-1] = (endTime-startTime)/(1000000);
         } else {
@@ -182,14 +170,13 @@ public class Spiral extends AppCompatActivity {
         } else if (hand == "left") {
             hand = "right";
             trial = 1;
-
         } else {
             Context context = getApplicationContext();
             CharSequence done = "All trials complete!";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(context, done, duration).show();
-            sendToSheets(lScores, lTimes, Sheets.UpdateType.LH_SPIRAL.ordinal());
-            sendToSheets(rScores, rTimes, Sheets.UpdateType.RH_SPIRAL.ordinal());
+            sendToSheets(lScores, lTimes, Sheets.TestType.LH_SPIRAL);
+            sendToSheets(rScores, rTimes, Sheets.TestType.RH_SPIRAL);
             new Timer().schedule(
                     new TimerTask() {
                         @Override
@@ -208,18 +195,19 @@ public class Spiral extends AppCompatActivity {
 
         Bitmap original = BitmapFactory.decodeResource(getResources(), R.drawable.cropped_spiral);
 
-        View drawing = (View) findViewById(R.id.draw_view);
+        View drawing = findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
         Bitmap user_drawn = drawing.getDrawingCache();
 
-        double score = 0;
+        double score;
+        double dx;
+        double dy;
+        double r ;
+        double theta;
 
         double mid_x = user_drawn.getWidth()/2;
         double mid_y = user_drawn.getHeight()/2;
-        double dx = 0;
-        double dy = 0;
-        double r = 0;
-        double theta = 0;
+
         int index = 0;
         // large data structures necessary to avoid overflow
         double theta_vec[] = new double[60000];
@@ -276,6 +264,56 @@ public class Spiral extends AppCompatActivity {
         drawing.setDrawingCacheEnabled(false);
 
         return (int) round(score);
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+      @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    this.savePictureToGallery();
+                    View save = findViewById(R.id.button3);
+                    save.setVisibility(View.INVISIBLE);
+                    View next = findViewById(R.id.next_but);
+                    next.setVisibility(View.VISIBLE);
+                    View draw = findViewById(R.id.draw_view);
+                    draw.setVisibility(View.INVISIBLE);
+                }
+                break;
+            default:
+                this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 
 }

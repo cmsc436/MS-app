@@ -12,6 +12,12 @@
     <string name="curl_start">Press the button to start curling.</string>
     <string name="popper_end">Finish test</string>
 
+    <string name="trial_start">Start %1$s trial %2$d</string>
+    <string name="curl_start">Press the button\nto start curling.</string>
+    <string name="curl_res">View Results</string>
+    <string name="curl_avg">Average Times</string>
+    <string name="curl_end">Finish test</string>
+
     <string name="results_view">View Results</string>
     <string name="start_trial">Start %1$s trial %2$d</string>
 

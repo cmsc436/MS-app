@@ -76,7 +76,8 @@
         android:textSize="8pt"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:bufferType="editable"/>
 
     <ImageView
         android:layout_width="300dp"

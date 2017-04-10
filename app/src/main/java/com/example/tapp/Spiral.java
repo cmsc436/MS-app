@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.example.tapp.R.id.textView;
 import edu.umd.cmsc436.sheets.Sheets;
 
 import static java.lang.Math.atan2;
@@ -48,9 +49,26 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spiral);
-
         sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
                 getString(R.string.private_sheet));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                    this.savePictureToGallery();
+                    View save = findViewById(R.id.button3);
+                    save.setVisibility(View.INVISIBLE);
+                    View next = findViewById(R.id.next_but);
+                    next.setVisibility(View.VISIBLE);
+                    View draw = findViewById(R.id.draw_view);
+                    draw.setVisibility(View.INVISIBLE);
+                break;
+            default:
+                break;
+        }
     }
 
     public void begin (View v) {
@@ -58,7 +76,8 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
         save.setVisibility(View.VISIBLE);
         View draw = findViewById(R.id.draw_view);
         draw.setVisibility(View.VISIBLE);
-        View text = findViewById(R.id.textView);
+        TextView text = (TextView) findViewById(textView);
+        text.setText("Trace spiral with " + hand + " hand.");
         text.setVisibility(View.VISIBLE);
         View start = findViewById(R.id.start_but);
         start.setVisibility(View.INVISIBLE);
@@ -68,6 +87,8 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
     public void next (View v) {
         View save = findViewById(R.id.button3);
         save.setVisibility(View.VISIBLE);
+        TextView text = (TextView) findViewById(textView);
+        text.setText("Trace spiral with " + hand + " hand.");
         View next = findViewById(R.id.next_but);
         next.setVisibility(View.INVISIBLE);
         View draw = findViewById(R.id.draw_view);
@@ -139,32 +160,16 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
             rScores[trial-1] = score;
             rTimes[trial-1] = (endTime-startTime)/(1000000);
         }
-        TextView text = (TextView) findViewById(R.id.textView);
+        TextView text = (TextView) findViewById(textView);
         text.setText("Score: " + score);
 
         DrawView drawing = (DrawView) findViewById(R.id.draw_view);
         drawing.clear();
         if (trial < 3) {
-            new Timer().schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            trial++;
-                        }
-                    },
-                    2000
-            );
-        } else if (hand.equals("left")) {
-            new Timer().schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            hand = "right";
-                            trial = 1;
-                        }
-                    },
-                    2000
-            );
+            trial++;
+        } else if (hand == "left") {
+            hand = "right";
+            trial = 1;
         } else {
             Context context = getApplicationContext();
             CharSequence done = "All trials complete!";

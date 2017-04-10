@@ -6,12 +6,26 @@
     tools:context="com.example.tapp.Curling">
 
     <TextView
+        android:id="@+id/instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textSize="30dp"
+        android:textAlignment="center"
+        android:text="Curl device 10 times"
+        android:visibility="invisible"/>
+
+    <TextView
         android:id="@+id/curl_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="178dp"
+        android:textSize="30dp"
+        android:textAlignment="center"
         android:text="@string/curl_start" />
 
     <Button

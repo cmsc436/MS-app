@@ -136,18 +136,23 @@ public class Tap extends AppCompatActivity implements Sheets.Host {
             }
         };
 
-        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
-                getString(R.string.private_sheet));
+        sheet = new Sheets(this, this, getString(R.string.app_name),
+                getString(R.string.class_sheet), getString(R.string.private_sheet));
     }
 
     private void sendToSheets(int[] scores, Sheets.TestType type) {
         // Compute the average across all trials
         float avg = 0;
-        for (int i = 0; i < numTrials / 2; i++)
+        float fScores[] = new float[scores.length];
+        for (int i = 0; i < numTrials / 2; i++) {
             avg += scores[i];
+            fScores[i] = scores[i];
+        }
         avg /= numTrials / 2;
         // Send data to the central sheet
         sheet.writeData(type, getString(R.string.userID), avg);
+        // Send data to private sheet (per trial)
+        sheet.writeTrials(type, getString(R.string.userID), fScores);
     }
 
     public void count(View v) {

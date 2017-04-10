@@ -45,8 +45,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         setContentView(R.layout.activity_popper);
         trialsComplete = 0;
         balloonCount = 0;
-        lReactionTimes = new long[numTrials][numBalloons];
-        rReactionTimes = new long[numTrials][numBalloons];
+        lReactionTimes = new long[numTrials/2][numBalloons];
+        rReactionTimes = new long[numTrials/2][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
         buttonStart.setText(String.format(getString(R.string.trial_start), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
@@ -67,13 +67,15 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 }
             });
         }
-        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
-                getString(R.string.private_sheet));
+        sheet = new Sheets(this, this, getString(R.string.app_name),
+                getString(R.string.class_sheet), getString(R.string.private_sheet));
     }
 
-    private void sendToSheets(double avg, Sheets.TestType type) {
+    private void sendToSheets(double avg, float[] trialAverages, Sheets.TestType type) {
         // Send to central sheet
         sheet.writeData(type, getString(R.string.userID), (float)avg);
+        // Send to private sheet
+        sheet.writeTrials(type, getString(R.string.userID), trialAverages);
     }
 
     public void setStart(View v) {
@@ -86,17 +88,23 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             // Compute averages and print
             double lAverage = 0;
             double rAverage = 0;
-            for (int i = 0; i < numTrials; i++) {
+            float lTrialAverages[] = new float[numTrials/2];
+            float rTrialAverages[] = new float[numTrials/2];
+            for (int i = 0; i < numTrials/2; i++) {
                 for(int j = 0; j < numBalloons; j++) {
                     lAverage += lReactionTimes[i][j];
                     rAverage += rReactionTimes[i][j];
+                    lTrialAverages[i] += lReactionTimes[i][j];
+                    rTrialAverages[i] += rReactionTimes[i][j];
                 }
+                lTrialAverages[i] /= numBalloons;
+                rTrialAverages[i] /= numBalloons;
             }
             lAverage /= (numTrials * numBalloons);
             rAverage /= (numTrials * numBalloons);
 
-            sendToSheets(lAverage / 1000000000, Sheets.TestType.LH_POP);
-            sendToSheets(rAverage / 1000000000, Sheets.TestType.RH_POP);
+            sendToSheets(lAverage, lTrialAverages, Sheets.TestType.LH_POP);
+            sendToSheets(rAverage, rTrialAverages, Sheets.TestType.RH_POP);
 
             // Print averages for user
             String resString = "";
@@ -127,10 +135,10 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         long elapsedTime = endTime - startTime;
         switch (hand) {
             case "right":
-                rReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                rReactionTimes[trialsComplete/2][balloonCount] = elapsedTime;
                 break;
             case "left":
-                lReactionTimes[trialsComplete][balloonCount] = elapsedTime;
+                lReactionTimes[trialsComplete/2][balloonCount] = elapsedTime;
                 break;
         }
 

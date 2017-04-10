@@ -1,1 +1,1 @@
-include ':app', ':sheets436-0.0.3.beta-release'
+include ':app', ':sheets436'

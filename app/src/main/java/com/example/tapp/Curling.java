@@ -63,8 +63,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
         curlText = (TextView) findViewById(R.id.curl_text);
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
-        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
-                getString(R.string.private_sheet));
+        sheet = new Sheets(this, this, getString(R.string.app_name),
+                getString(R.string.class_sheet), getString(R.string.private_sheet));
     }
 
     @Override
@@ -190,11 +190,16 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
     private void sendToSheets(long[] scores, Sheets.TestType type) {
         // Compute average across all trials
         float avg = 0;
-        for (int i = 0; i < numTrials / 2; i++)
+        float fScores[] = new float[scores.length];
+        for (int i = 0; i < numTrials / 2; i++) {
             avg += scores[i];
+            fScores[i] = scores[i];
+        }
         avg /= numTrials / 2;
         // Send to central sheet
         sheet.writeData(type, getString(R.string.userID), avg);
+        // Send data to private sheet (per trial)
+        sheet.writeTrials(type, getString(R.string.userID), fScores);
     }
 
     @Override

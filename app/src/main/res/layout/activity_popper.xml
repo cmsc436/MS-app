@@ -32,7 +32,7 @@
     </FrameLayout>
 
     <Button
-        android:text="@string/popper_start"
+        android:text="@string/start_trial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/popper_start"

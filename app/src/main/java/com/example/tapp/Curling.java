@@ -6,17 +6,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Locale;
 
-public class Curling extends AppCompatActivity implements SensorEventListener {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Curling extends AppCompatActivity implements SensorEventListener, Sheets.Host {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -33,6 +35,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     TextView curlText;
     Button curlButton;
     private boolean sensorIsRegistered = false;
+    private Sheets sheet;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         curlText = (TextView) findViewById(R.id.curl_text);
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
-        // TODO set initial textView text
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
     @Override
@@ -73,9 +78,9 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
 
     private void setButtonTrialText() {
         if (trialsComplete < numTrials) {
-            curlButton.setText(String.format(getString(R.string.trial_start), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
+            curlButton.setText(String.format(getString(R.string.start_trial), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
         } else {
-            curlButton.setText("View Results");
+            curlButton.setText(getString(R.string.results_view));
         }
     }
 
@@ -107,8 +112,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
             long[] lScores = {this.lCurlTimes[0], this.lCurlTimes[1], this.lCurlTimes[2]};
             long[] rScores = {this.rCurlTimes[0], this.rCurlTimes[1], this.rCurlTimes[2]};
 
-            sendToSheets(lScores, Sheets.UpdateType.LH_CURL.ordinal());
-            sendToSheets(rScores, Sheets.UpdateType.RH_CURL.ordinal());
+            sendToSheets(lScores, Sheets.TestType.LH_CURL);
+            sendToSheets(rScores, Sheets.TestType.RH_CURL);
         }
     }
 
@@ -149,19 +154,48 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
 
     }
 
-    private void sendToSheets(long[] scores, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
+    private void sendToSheets(long[] scores, Sheets.TestType type) {
+        // Compute average across all trials
         float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
             avg += scores[i];
         avg /= numTrials / 2;
+        // Send to central sheet
+        sheet.writeData(type, getString(R.string.userID), avg);
+    }
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
 
-        startActivity(sheets);
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -14,13 +16,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sheets436.Sheets;
-
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-public class Popper extends AppCompatActivity implements Balloon.BalloonListener {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Popper extends AppCompatActivity implements Balloon.BalloonListener, Sheets.Host {
 
     private int numTrials = 6;
     private int numBalloons = 10;
@@ -35,6 +37,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
     private String hand = "left";
     Button buttonStart;
 
+    private Sheets sheet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +48,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         lReactionTimes = new long[numTrials][numBalloons];
         rReactionTimes = new long[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
-        buttonStart.setText(String.format(getString(R.string.popper_start), hand, trialsComplete + 1));
+        buttonStart.setText(String.format(getString(R.string.start_trial), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
         mBalloonColors[1] = Color.argb(255, 0, 255, 0);
         mBalloonColors[2] = Color.argb(255, 0, 0, 255);
@@ -63,17 +67,13 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 }
             });
         }
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
-    private void sendToSheets(double avg, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
-        sheets.putExtra(Sheets.EXTRA_VALUE, (float)avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-        startActivity(sheets);
+    private void sendToSheets(double avg, Sheets.TestType type) {
+        // Send to central sheet
+        sheet.writeData(type, getString(R.string.userID), (float)avg);
     }
 
     public void setStart(View v) {
@@ -95,8 +95,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             lAverage /= (numTrials * numBalloons);
             rAverage /= (numTrials * numBalloons);
 
-            sendToSheets(lAverage / 1000000000, Sheets.UpdateType.LH_POP.ordinal());
-            sendToSheets(rAverage / 1000000000, Sheets.UpdateType.RH_POP.ordinal());
+            sendToSheets(lAverage / 1000000000, Sheets.TestType.LH_POP);
+            sendToSheets(rAverage / 1000000000, Sheets.TestType.RH_POP);
 
             // Print averages for user
             String resString = "";
@@ -139,10 +139,10 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             trialsComplete++;
             buttonStart.setVisibility(View.VISIBLE);
             if (trialsComplete == numTrials) {
-                buttonStart.setText(getString(R.string.popper_view));
+                buttonStart.setText(getString(R.string.results_view));
             } else {
                 hand = (hand.equals("left"))? "right" : "left";
-                buttonStart.setText(String.format(getString(R.string.popper_start), hand, (trialsComplete/2) + 1));
+                buttonStart.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
             }
         } else {
             Random random = new Random(new Date().getTime());
@@ -152,5 +152,40 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 }
             }, random.nextInt(1000));
         }
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

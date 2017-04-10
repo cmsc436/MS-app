@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.pm.ActivityInfo;
@@ -14,17 +15,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
 
-import com.example.sheets436.Sheets;
-
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Level extends AppCompatActivity {
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class Level extends AppCompatActivity implements Sheets.Host {
         Accelerometer accelerometer;
 
         float x_degrees, y_degrees, valuesAccel_X, valuesAccel_Y;
@@ -42,11 +45,12 @@ public class Level extends AppCompatActivity {
         static int numTrials = 6;
         int[] lScores = new int[numTrials/2];
         int[] rScores = new int[numTrials/2];
-        int trial = 0;
         Button button_Start;
 
         int lScore = 0;
         int rScore = 0;
+
+        private Sheets sheet;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -65,22 +69,19 @@ public class Level extends AppCompatActivity {
             };
 
             trialsComplete = 0;
+
+            sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                    getString(R.string.private_sheet));
         }
 
-        private void sendToSheets(int[] scores, int sheet) {
-            // Send data to sheets
-            Intent sheets = new Intent(this, Sheets.class);
-
+        private void sendToSheets(int[] scores, Sheets.TestType type) {
+            // Compute average across the trials
             float avg = 0;
             for (int i = 0; i < numTrials / 2; i++)
                 avg += scores[i];
             avg /= numTrials / 2;
-
-            sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-            sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-            sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-            startActivity(sheets);
+            // Send data to central sheet
+            sheet.writeData(type, getString(R.string.userID), avg);
         }
 
         private void handleTimerComplete() {
@@ -105,16 +106,18 @@ public class Level extends AppCompatActivity {
                     default:
                         hand = "left";
                 }
-                button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
+                button_Start.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
                 Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
                 timer.cancel();
-                this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
+                this.saveCanvasToGallery("Level Test", String.format(Locale.US,
+                        "%s hand: trial %d", hand, trialsComplete));
                 accelerometer.clear();
             } else {
                 int temp = this.scoreCache();
                 rScores[(trialsComplete/2)-1] = temp;
                 rScore = rScore + temp;
-                this.saveCanvasToGallery("Level Test", String.format("%s hand: trial %d", hand, trialsComplete));
+                this.saveCanvasToGallery("Level Test", String.format(Locale.US,
+                        "%s hand: trial %d", hand, trialsComplete));
 
                 lScore = lScore / (numTrials/2);
                 rScore = rScore / (numTrials/2);
@@ -128,8 +131,8 @@ public class Level extends AppCompatActivity {
                 View accel = findViewById(R.id.accelerometer);
                 accel.setVisibility(View.INVISIBLE);
 
-                sendToSheets(lScores, Sheets.UpdateType.LH_LEVEL.ordinal());
-                sendToSheets(rScores, Sheets.UpdateType.RH_LEVEL.ordinal());
+                sendToSheets(lScores, Sheets.TestType.LH_LEVEL);
+                sendToSheets(rScores, Sheets.TestType.RH_LEVEL);
 
                 Button returnButton = (Button) findViewById(R.id.buttonReturn);
                 TextView scoreDisplay = (TextView) findViewById(R.id.score_display);
@@ -144,7 +147,7 @@ public class Level extends AppCompatActivity {
             double pixCount = 0;
             int redThreshold = 200;
 
-            View drawing = (View) findViewById(R.id.accelerometer);
+            View drawing = findViewById(R.id.accelerometer);
             drawing.setDrawingCacheEnabled(true);
             Bitmap bitmap = drawing.getDrawingCache();
 
@@ -170,7 +173,7 @@ public class Level extends AppCompatActivity {
         }
 
         private void saveCanvasToGallery(String title, String description) {
-            View drawing = (View) findViewById(R.id.accelerometer);
+            View drawing = findViewById(R.id.accelerometer);
             drawing.setDrawingCacheEnabled(true);
             Bitmap bitmap = drawing.getDrawingCache();
 
@@ -204,7 +207,7 @@ public class Level extends AppCompatActivity {
             button_Start = (Button) findViewById(R.id.button_Start);
             accelerometer = (Accelerometer) findViewById(R.id.accelerometer);
 
-            button_Start.setText(String.format(getString(R.string.level_start), hand, (trialsComplete/2) + 1));
+            button_Start.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
         }
 
         public void set_Start(View v) {
@@ -262,7 +265,7 @@ public class Level extends AppCompatActivity {
             }
         };
 
-        class MyTask extends TimerTask{
+        private class MyTask extends TimerTask{
 
             @Override
             public void run() {
@@ -282,4 +285,39 @@ public class Level extends AppCompatActivity {
         public void returnToMain(View v) {
             finish();
         }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return Info.LIB_ACCOUNT_NAME_REQUEST_CODE;
+            case REQUEST_AUTHORIZATION:
+                return Info.LIB_AUTHORIZATION_REQUEST_CODE;
+            case REQUEST_PERMISSIONS:
+                return Info.LIB_PERMISSION_REQUEST_CODE;
+            case REQUEST_PLAY_SERVICES:
+                return Info.LIB_PLAY_SERVICES_REQUEST_CODE;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
+    }
     }

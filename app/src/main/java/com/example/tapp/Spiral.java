@@ -56,6 +56,12 @@ public class Spiral extends AppCompatActivity {
             case 0:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
                     this.savePictureToGallery();
+                    View save = findViewById(R.id.button3);
+                    save.setVisibility(View.INVISIBLE);
+                    View next = findViewById(R.id.next_but);
+                    next.setVisibility(View.VISIBLE);
+                    View draw = findViewById(R.id.draw_view);
+                    draw.setVisibility(View.INVISIBLE);
                 break;
             default:
                 break;
@@ -68,6 +74,7 @@ public class Spiral extends AppCompatActivity {
         View draw = findViewById(R.id.draw_view);
         draw.setVisibility(View.VISIBLE);
         TextView text = (TextView) findViewById(textView);
+        text.setText("Trace spiral with " + hand + " hand.");
         text.setVisibility(View.VISIBLE);
         View start = findViewById(R.id.start_but);
         start.setVisibility(View.INVISIBLE);
@@ -78,6 +85,7 @@ public class Spiral extends AppCompatActivity {
         View save = findViewById(R.id.button3);
         save.setVisibility(View.VISIBLE);
         TextView text = (TextView) findViewById(textView);
+        text.setText("Trace spiral with " + hand + " hand.");
         View next = findViewById(R.id.next_but);
         next.setVisibility(View.INVISIBLE);
         View draw = findViewById(R.id.draw_view);

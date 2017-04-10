@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,6 +26,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     private final float orientationThreshold = 0.7f;
     private long lCurlTimes[]; // times in nanoseconds
     private long rCurlTimes[]; // times in nanoseconds
+    private double lAvg;
+    private double rAvg;
     private int trialsComplete = 0;
     public static final int numTrials = 6; // 3 trials per arm
     private boolean isFaceUp;
@@ -32,8 +35,11 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
     public static final int curlGoal = 10;
     private long startTime;
     TextView curlText;
+    TextView curlInst;
     Button curlButton;
     private boolean sensorIsRegistered = false;
+    boolean done = false;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         setContentView(R.layout.activity_curling);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         // initialize the rotation matrix to identity
         mRotationMatrix[0] = 1;
@@ -50,6 +57,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
 
         lCurlTimes = new long[3];
         rCurlTimes = new long[3];
+        curlInst = (TextView) findViewById(R.id.instructions);
         curlText = (TextView) findViewById(R.id.curl_text);
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
@@ -76,7 +84,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
         if (trialsComplete < numTrials) {
             curlButton.setText(String.format(getString(R.string.trial_start), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
         } else {
-            curlButton.setText("View Results");
+            curlButton.setText(getString(R.string.curl_res));
         }
     }
 
@@ -99,17 +107,39 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
 
     public void curlButtonPress(View v) {
         if (trialsComplete < numTrials) {
-            curlButton.setVisibility(View.GONE);
+            curlButton.setVisibility(View.INVISIBLE);
+
             isFaceUp = false;
             curlCount = 0;
+            curlText.setText(String.format(Locale.getDefault(), "%d", curlCount));
+            curlInst.setVisibility(View.VISIBLE);
             this.startSensor();
             sensorIsRegistered = true;
+        } else if (done) {
+            finish();
         } else {
             long[] lScores = {this.lCurlTimes[0], this.lCurlTimes[1], this.lCurlTimes[2]};
             long[] rScores = {this.rCurlTimes[0], this.rCurlTimes[1], this.rCurlTimes[2]};
 
             sendToSheets(lScores, Sheets.UpdateType.LH_CURL.ordinal());
             sendToSheets(rScores, Sheets.UpdateType.RH_CURL.ordinal());
+
+            lAvg = 0;
+            rAvg = 0;
+            for (int i = 0; i < numTrials/2; i++) {
+                lAvg += lCurlTimes[i]/1000000000.0;
+                rAvg += rCurlTimes[i]/1000000000.0;
+            }
+            lAvg /= (numTrials/2);
+            rAvg /= (numTrials/2);
+
+            curlInst.setText(getString(R.string.curl_avg));
+            curlInst.setVisibility(View.VISIBLE);
+            curlText.setText(String.format(Locale.getDefault(),"Left: %.2f seconds\nRight: %.2f seconds",lAvg,rAvg));
+            curlText.setVisibility(View.VISIBLE);
+
+            done = true;
+            curlButton.setText(getString(R.string.curl_end));
         }
     }
 
@@ -121,6 +151,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
                 isFaceUp = false;
                 curlCount++;
                 curlText.setText(String.format(Locale.getDefault(), "%d", curlCount));
+
+                vibrator.vibrate(200);
             } else if (!isFaceUp && deviceIsFacingUp()) {
                 isFaceUp = true;
                 if (curlCount == 0) {
@@ -140,7 +172,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener {
                 curlCount = 0;
                 curlButton.setVisibility(View.VISIBLE);
                 this.setButtonTrialText();
-                curlText.setText(String.format(Locale.getDefault(), "Elapsed time: %.4f seconds", elapsedTime / 1000000000.0));
+                curlInst.setVisibility(View.INVISIBLE);
+                curlText.setText(String.format(Locale.getDefault(), "Elapsed time: %.2f seconds", elapsedTime / 1000000000.0));
             }
         }
     }

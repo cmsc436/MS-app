@@ -56,7 +56,6 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
         curlText = (TextView) findViewById(R.id.curl_text);
         curlButton = (Button) findViewById(R.id.curling_start_button);
         this.setButtonTrialText();
-        // TODO set initial textView text
         sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
                 getString(R.string.private_sheet));
     }
@@ -79,9 +78,9 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
 
     private void setButtonTrialText() {
         if (trialsComplete < numTrials) {
-            curlButton.setText(String.format(getString(R.string.trial_start), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
+            curlButton.setText(String.format(getString(R.string.start_trial), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
         } else {
-            curlButton.setText("View Results");
+            curlButton.setText(getString(R.string.results_view));
         }
     }
 
@@ -113,8 +112,8 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
             long[] lScores = {this.lCurlTimes[0], this.lCurlTimes[1], this.lCurlTimes[2]};
             long[] rScores = {this.rCurlTimes[0], this.rCurlTimes[1], this.rCurlTimes[2]};
 
-            sendToSheets(lScores, Sheets.UpdateType.LH_CURL.ordinal());
-            sendToSheets(rScores, Sheets.UpdateType.RH_CURL.ordinal());
+            sendToSheets(lScores, Sheets.TestType.LH_CURL);
+            sendToSheets(rScores, Sheets.TestType.RH_CURL);
         }
     }
 
@@ -155,20 +154,14 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
 
     }
 
-    private void sendToSheets(long[] scores, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
+    private void sendToSheets(long[] scores, Sheets.TestType type) {
+        // Compute average across all trials
         float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
             avg += scores[i];
         avg /= numTrials / 2;
-
-        sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-        startActivity(sheets);
+        // Send to central sheet
+        sheet.writeData(type, getString(R.string.userID), avg);
     }
 
     @Override

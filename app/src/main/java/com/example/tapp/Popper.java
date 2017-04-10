@@ -48,7 +48,7 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
         lReactionTimes = new long[numTrials][numBalloons];
         rReactionTimes = new long[numTrials][numBalloons];
         buttonStart = (Button) findViewById(R.id.popper_start);
-        buttonStart.setText(String.format(getString(R.string.popper_start), hand, trialsComplete + 1));
+        buttonStart.setText(String.format(getString(R.string.start_trial), hand, trialsComplete + 1));
         mBalloonColors[0] = Color.argb(255, 255, 0, 0);
         mBalloonColors[1] = Color.argb(255, 0, 255, 0);
         mBalloonColors[2] = Color.argb(255, 0, 0, 255);
@@ -67,17 +67,13 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
                 }
             });
         }
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
-    private void sendToSheets(double avg, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
-        sheets.putExtra(Sheets.EXTRA_VALUE, (float)avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-        startActivity(sheets);
+    private void sendToSheets(double avg, Sheets.TestType type) {
+        // Send to central sheet
+        sheet.writeData(type, getString(R.string.userID), (float)avg);
     }
 
     public void setStart(View v) {
@@ -99,8 +95,8 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             lAverage /= (numTrials * numBalloons);
             rAverage /= (numTrials * numBalloons);
 
-            sendToSheets(lAverage / 1000000000, Sheets.UpdateType.LH_POP.ordinal());
-            sendToSheets(rAverage / 1000000000, Sheets.UpdateType.RH_POP.ordinal());
+            sendToSheets(lAverage / 1000000000, Sheets.TestType.LH_POP);
+            sendToSheets(rAverage / 1000000000, Sheets.TestType.RH_POP);
 
             // Print averages for user
             String resString = "";
@@ -143,10 +139,10 @@ public class Popper extends AppCompatActivity implements Balloon.BalloonListener
             trialsComplete++;
             buttonStart.setVisibility(View.VISIBLE);
             if (trialsComplete == numTrials) {
-                buttonStart.setText(getString(R.string.popper_view));
+                buttonStart.setText(getString(R.string.results_view));
             } else {
                 hand = (hand.equals("left"))? "right" : "left";
-                buttonStart.setText(String.format(getString(R.string.popper_start), hand, (trialsComplete/2) + 1));
+                buttonStart.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
             }
         } else {
             Random random = new Random(new Date().getTime());

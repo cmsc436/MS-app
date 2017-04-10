@@ -98,8 +98,8 @@ public class Tap extends AppCompatActivity implements Sheets.Host {
                 countText.setVisibility(View.VISIBLE);
                 countText.setText(String.format(Locale.US, "Left taps: %d\nRight taps: %d", this.lTotal/3, this.rTotal/3));
 
-                sendToSheets(lScores, Sheets.UpdateType.LH_TAP.ordinal());
-                sendToSheets(rScores, Sheets.UpdateType.RH_TAP.ordinal());
+                sendToSheets(lScores, Sheets.TestType.LH_TAP);
+                sendToSheets(rScores, Sheets.TestType.RH_TAP);
 
                 goToMain.setVisibility(View.VISIBLE);
                 break;
@@ -135,22 +135,19 @@ public class Tap extends AppCompatActivity implements Sheets.Host {
                 handleTimerComplete();
             }
         };
+
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
-    private void sendToSheets(int[] scores, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
+    private void sendToSheets(int[] scores, Sheets.TestType type) {
+        // Compute the average across all trials
         float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
             avg += scores[i];
         avg /= numTrials / 2;
-
-        sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-        startActivity(sheets);
+        // Send data to the central sheet
+        sheet.writeData(type, getString(R.string.userID), avg);
     }
 
     public void count(View v) {

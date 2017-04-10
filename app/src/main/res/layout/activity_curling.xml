@@ -28,7 +28,7 @@
         android:shadowColor="#676980"
         android:shadowDx="0"
         android:shadowDy="0"
-        android:text="@string/trial_start"
+        android:text="@string/start_trial"
         android:textColor="#FFFFFF" />
 
 </RelativeLayout>

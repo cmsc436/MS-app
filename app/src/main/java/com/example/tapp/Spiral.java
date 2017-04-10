@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -47,6 +48,9 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spiral);
+
+        sheet = new Sheets(this, getString(R.string.app_name), getString(R.string.class_sheet),
+                getString(R.string.private_sheet));
     }
 
     public void begin (View v) {
@@ -88,24 +92,18 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
         }
     }
 
-    private void sendToSheets(int[] scores, long[] durations, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-
+    private void sendToSheets(int[] scores, long[] durations, Sheets.TestType type) {
+        // Compute the average across all trials
         float avg = 0;
         for (int i = 0; i < numTrials / 2; i++)
             avg += scores[i];
         avg /= numTrials / 2;
-
-        sheets.putExtra(Sheets.EXTRA_VALUE, avg);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.userID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
-
-        startActivity(sheets);
+        // Send to the central sheet
+        sheet.writeData(type, getString(R.string.userID), avg);
     }
 
     private void savePictureToGallery() {
-        View drawing = (View) findViewById(R.id.draw_view);
+        View drawing = findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
         Bitmap user_drawn = drawing.getDrawingCache();
 
@@ -134,7 +132,7 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
     private void displayScore() {
 
         int score = score_spiral();
-        if (hand == "left") {
+        if (hand.equals("left")) {
             lScores[trial-1] = score;
             lTimes[trial-1] = (endTime-startTime)/(1000000);
         } else {
@@ -156,7 +154,7 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
                     },
                     2000
             );
-        } else if (hand == "left") {
+        } else if (hand.equals("left")) {
             new Timer().schedule(
                     new TimerTask() {
                         @Override
@@ -172,8 +170,8 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
             CharSequence done = "All trials complete!";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(context, done, duration).show();
-            sendToSheets(lScores, lTimes, Sheets.UpdateType.LH_SPIRAL.ordinal());
-            sendToSheets(rScores, rTimes, Sheets.UpdateType.RH_SPIRAL.ordinal());
+            sendToSheets(lScores, lTimes, Sheets.TestType.LH_SPIRAL);
+            sendToSheets(rScores, rTimes, Sheets.TestType.RH_SPIRAL);
             new Timer().schedule(
                     new TimerTask() {
                         @Override
@@ -192,18 +190,19 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
 
         Bitmap original = BitmapFactory.decodeResource(getResources(), R.drawable.cropped_spiral);
 
-        View drawing = (View) findViewById(R.id.draw_view);
+        View drawing = findViewById(R.id.draw_view);
         drawing.setDrawingCacheEnabled(true);
         Bitmap user_drawn = drawing.getDrawingCache();
 
-        double score = 0;
+        double score;
+        double dx;
+        double dy;
+        double r ;
+        double theta;
 
         double mid_x = user_drawn.getWidth()/2;
         double mid_y = user_drawn.getHeight()/2;
-        double dx = 0;
-        double dy = 0;
-        double r = 0;
-        double theta = 0;
+
         int index = 0;
         // large data structures necessary to avoid overflow
         double theta_vec[] = new double[60000];
@@ -287,7 +286,8 @@ public class Spiral extends AppCompatActivity implements Sheets.Host {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case 0:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))

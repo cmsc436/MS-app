@@ -85,9 +85,9 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
 
     private void setButtonTrialText() {
         if (trialsComplete < numTrials) {
-            curlButton.setText(String.format(getString(R.string.start_trial), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
+            curlButton.setText(String.format(getString(R.string.trial_start), trialsComplete % 2 == 0 ? "left" : "right", (trialsComplete / 2) + 1));
         } else {
-            curlButton.setText(getString(R.string.curl_res));
+            curlButton.setText(getString(R.string.results_view));
         }
     }
 
@@ -142,7 +142,7 @@ public class Curling extends AppCompatActivity implements SensorEventListener, S
             curlText.setVisibility(View.VISIBLE);
 
             done = true;
-            curlButton.setText(getString(R.string.curl_end));
+            curlButton.setText(getString(R.string.test_end));
 
         }
     }

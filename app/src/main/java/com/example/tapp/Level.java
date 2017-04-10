@@ -106,7 +106,7 @@ public class Level extends AppCompatActivity implements Sheets.Host {
                     default:
                         hand = "left";
                 }
-                button_Start.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
+                button_Start.setText(String.format(getString(R.string.trial_start), hand, (trialsComplete/2) + 1));
                 Toast.makeText(getApplicationContext(), "Trial complete!", Toast.LENGTH_LONG).show();
                 timer.cancel();
                 this.saveCanvasToGallery("Level Test", String.format(Locale.US,
@@ -207,7 +207,7 @@ public class Level extends AppCompatActivity implements Sheets.Host {
             button_Start = (Button) findViewById(R.id.button_Start);
             accelerometer = (Accelerometer) findViewById(R.id.accelerometer);
 
-            button_Start.setText(String.format(getString(R.string.start_trial), hand, (trialsComplete/2) + 1));
+            button_Start.setText(String.format(getString(R.string.trial_start), hand, (trialsComplete/2) + 1));
         }
 
         public void set_Start(View v) {

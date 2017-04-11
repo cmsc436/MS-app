@@ -120,7 +120,7 @@
         android:onClick="navSway"
         android:shadowColor="#676980"
         android:shadowRadius="5"
-        android:text="Swaying Test"
+        android:text="Start swaying test"
         android:textColor="#FFFFFF"
         android:textSize="7pt" />
 

@@ -15,9 +15,6 @@
         android:id="@+id/tapping_info_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/spiral_info_button"
-        android:layout_alignStart="@+id/spiral_info_button"
-        android:layout_marginBottom="12dp"
         android:background="@drawable/buttonshape"
 
         android:minHeight="32dp"
@@ -29,7 +26,10 @@
         android:shadowRadius="5"
         android:text="@string/tap_button"
         android:textColor="#FFFFFF"
-        android:textSize="7pt" />
+        android:textSize="7pt"
+        android:layout_marginTop="88dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/spiral_info_button" />
 
     <Button
         android:text="@string/spiral_button"
@@ -47,8 +47,9 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:layout_marginEnd="34dp"
-        android:layout_centerVertical="true"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="55dp"
+        android:layout_alignTop="@+id/tapping_info_button"
         android:layout_alignParentEnd="true" />
 
     <Button
@@ -102,6 +103,24 @@
         android:shadowColor="#676980"
         android:shadowRadius="5"
         android:text="@string/curl_button"
+        android:textColor="#FFFFFF"
+        android:textSize="7pt" />
+
+    <Button
+        android:id="@+id/sway_info_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/curling_info_button"
+        android:layout_below="@+id/curling_info_button"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/buttonshape"
+
+        android:minHeight="32dp"
+        android:minWidth="32dp"
+        android:onClick="navSway"
+        android:shadowColor="#676980"
+        android:shadowRadius="5"
+        android:text="Swaying Test"
         android:textColor="#FFFFFF"
         android:textSize="7pt" />
 

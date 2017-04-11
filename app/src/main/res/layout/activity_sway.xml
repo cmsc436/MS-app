@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_record"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/src_img_sub"
+    tools:context="com.example.tapp.Sway">
+
+    <Button
+        android:text="Start Trials"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="55dp"
+        android:id="@+id/startTrials"
+        tools:text="Start Trials"
+        android:onClick="onClick"
+
+        android:textSize="7pt"
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#676980"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/startTrials"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="29dp"
+        android:text="Trial 1 Data"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="93dp"
+        android:text="Trial 2 Data"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trial 3 Data"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        android:layout_marginTop="119dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/textView2" />
+</RelativeLayout>

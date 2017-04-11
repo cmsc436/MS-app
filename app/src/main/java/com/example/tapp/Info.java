@@ -42,4 +42,9 @@ public class Info extends AppCompatActivity {
         Intent curl = new Intent(this, Curling.class);
         startActivity(curl);
     }
+
+    public void navSway(View v) {
+        Intent sway = new Intent(this, Sway.class);
+        startActivity(sway);
+    }
 }

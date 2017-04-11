@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.Locale;
+
 import edu.umd.cmsc436.sheets.Sheets;
 
 public class Sway extends AppCompatActivity implements SensorEventListener, Sheets.Host {
@@ -114,16 +116,12 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     for (int i = 1; i < 11; i++) {
                         x_pos = t1[i][0]*scaleFac;
                         y_pos = t1[i][1]*scaleFac;
-//                        x_pos = hardcodeX[i-1];
-//                        y_pos = hardcodeY[i-1];
                         mPath.lineTo(x_mid+x_pos,y_mid+y_pos);
                     }
 
                     mCanvas1.drawPath(mPath, mPaint);
 
                     savePictureToGallery(mBitmap1, 1);
-
-                    //TODO; write average sway for each trial to Sheets
 
                     //calculate average distance from center
                     float x = 0;
@@ -141,7 +139,6 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     }
 
                     scores[0] = distance/10;
-//                    tv.setText("x: " + x/10 + "\ny: " + y/10 + "\nz: " + z/10);
                     tv.setText("\nTrial 1 Done\nScore: " + scores[0]);
 
 
@@ -165,8 +162,6 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
                     savePictureToGallery(mBitmap2, 2);
 
-                    //TODO; write average sway for each trial to Sheets
-
                     //calculate average distance from center
                     float x = 0;
                     float y = 0;
@@ -183,7 +178,6 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     }
 
                     scores[1] = distance/10;
-//                    tv.setText("x: " + x/10 + "\ny: " + y/10 + "\nz: " + z/10);
                     tv.setText("\nTrial 2 Done\nScore: " + scores[1]);
 
                 } else if (trial == 3) {
@@ -205,8 +199,6 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
                     savePictureToGallery(mBitmap3, 3);
 
-                    //TODO; write average sway for each trial to Sheets
-
                     //calculate average distance from center
                     float x = 0;
                     float y = 0;
@@ -223,7 +215,6 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     }
 
                     scores[2] = distance/10;
-//                    tv.setText("x: " + x/10 + "\ny: " + y/10 + "\nz: " + z/10);
 
                     tv.setText("Trial 3 Done\nScore: " + scores[2]);
 
@@ -283,16 +274,10 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
     public void onSensorChanged(SensorEvent event) {
         if(trial == 1) {
             System.arraycopy(event.values, 0, t1[curIdx], 0, 3);
-            //TextView tv = (TextView) findViewById(R.id.textView1);
-            //tv.setText(curIdx + " X: "+t1[curIdx][0]);
         } else if (trial == 2) {
             System.arraycopy(event.values, 0, t2[curIdx], 0, 3);
-            //TextView tv = (TextView) findViewById(R.id.textView1);
-            //tv.setText(curIdx + " Y: "+t2[curIdx][1]);
         } else if (trial == 3) {
             System.arraycopy(event.values, 0, t3[curIdx], 0, 3);
-            //TextView tv = (TextView) findViewById(R.id.textView1);
-            //tv.setText(curIdx + " Z: "+t3[curIdx][2]);
         }
 
     }
@@ -310,7 +295,7 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
     }
 
     private void savePictureToGallery(Bitmap toSave, int trial) {
-        String descript = String.format("Trial %d", trial);
+        String descript = String.format(Locale.getDefault(), "Trial %d", trial);
         String savedImageURL = MediaStore.Images.Media.insertImage(getContentResolver(), toSave, "Sway", descript);
 
         Context context = getApplicationContext();

@@ -64,8 +64,11 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
     private float x_pos, y_pos;
 
-    int width = 200;
-    int height = 200;
+    int width = 400;
+    float x_mid = width/2;
+    int height = 400;
+    float y_mid = height/2;
+    float scaleFac = 40;
 
     private Sheets sheet;
     float distance;
@@ -73,6 +76,9 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
     double average = 0;
 
     boolean done = false;
+
+    float[] hardcodeX = {20,0,-50,-30,-50,10,60,30,40,50};
+    float[] hardcodeY = {20,60,60,0,-20,-30,10,-40,10,20};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +110,13 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     mBitmap1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                     mCanvas1 = new Canvas(mBitmap1);
 
-                    for (int i = 0; i < 10; i++) {
-                        x_pos = t1[i][0];
-                        y_pos = t1[i][1];
-                        mPath.lineTo(x_pos,y_pos);
+                    mPath.moveTo(x_mid,y_mid);
+                    for (int i = 1; i < 11; i++) {
+                        x_pos = t1[i][0]*scaleFac;
+                        y_pos = t1[i][1]*scaleFac;
+//                        x_pos = hardcodeX[i-1];
+//                        y_pos = hardcodeY[i-1];
+                        mPath.lineTo(x_mid+x_pos,y_mid+y_pos);
                     }
 
                     mCanvas1.drawPath(mPath, mPaint);
@@ -124,7 +133,7 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
                     for(int i = 0; i < 10; i++) {
                         // distance formula
-                        distance += Math.sqrt(Math.pow(t1[i][0],2)+Math.pow(t1[i][1],2)+Math.pow(t1[i][2],2));
+                        distance += Math.sqrt(Math.pow(t1[i][0],2)+Math.pow(t1[i][1],2));
                         // averages
                         x += t1[i][0];
                         y += t1[i][1];
@@ -147,8 +156,8 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     mCanvas2 = new Canvas(mBitmap2);
 
                     for (int i = 0; i < 10; i++) {
-                        x_pos = t2[i][0];
-                        y_pos = t2[i][1];
+                        x_pos = t2[i][0]*scaleFac;
+                        y_pos = t2[i][1]*scaleFac;
                         mPath.lineTo(x_pos,y_pos);
                     }
 
@@ -166,7 +175,7 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
                     for(int i = 0; i < 10; i++) {
                         // distance formula
-                        distance += Math.sqrt(Math.pow(t2[i][0],2)+Math.pow(t2[i][1],2)+Math.pow(t2[i][2],2));
+                        distance += Math.sqrt(Math.pow(t2[i][0],2)+Math.pow(t2[i][1],2));
                         // averages
                         x += t2[i][0];
                         y += t2[i][1];
@@ -187,8 +196,8 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
                     mCanvas3 = new Canvas(mBitmap3);
 
                     for (int i = 0; i < 10; i++) {
-                        x_pos = t3[i][0];
-                        y_pos = t3[i][1];
+                        x_pos = t3[i][0]*scaleFac;
+                        y_pos = t3[i][1]*scaleFac;
                         mPath.lineTo(x_pos,y_pos);
                     }
 
@@ -206,7 +215,7 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
                     for(int i = 0; i < 10; i++) {
                         // distance formula
-                        distance += Math.sqrt(Math.pow(t3[i][0],2)+Math.pow(t3[i][1],2)+Math.pow(t3[i][2],2));
+                        distance += Math.sqrt(Math.pow(t3[i][0],2)+Math.pow(t3[i][1],2));
                         // averages
                         x += t3[i][0];
                         y += t3[i][1];
@@ -272,30 +281,18 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
 
     // http://stackoverflow.com/questions/11068671/read-x-y-z-coordinates-of-android-phone-using-accelerometer
     public void onSensorChanged(SensorEvent event) {
-        if(last_values != null){
-            float dt = (event.timestamp - last_timestamp) * NS2S;
-
-            for(int index = 0; index < 3;++index){
-                velocity[index] += (event.values[index] + last_values[index])/2 * dt;
-                position[index] += velocity[index] * dt;
-            }
-        }
-        else{
-            last_values = new float[3];
-            velocity = new float[3];
-            position = new float[3];
-            velocity[0] = velocity[1] = velocity[2] = 0f;
-            position[0] = position[1] = position[2] = 0f;
-        }
-        System.arraycopy(event.values, 0, last_values, 0, 3);
-        last_timestamp = event.timestamp;
-
         if(trial == 1) {
-            t1[curIdx] = position;
+            System.arraycopy(event.values, 0, t1[curIdx], 0, 3);
+            //TextView tv = (TextView) findViewById(R.id.textView1);
+            //tv.setText(curIdx + " X: "+t1[curIdx][0]);
         } else if (trial == 2) {
-            t2[curIdx] = position;
+            System.arraycopy(event.values, 0, t2[curIdx], 0, 3);
+            //TextView tv = (TextView) findViewById(R.id.textView1);
+            //tv.setText(curIdx + " Y: "+t2[curIdx][1]);
         } else if (trial == 3) {
-            t3[curIdx] = position;
+            System.arraycopy(event.values, 0, t3[curIdx], 0, 3);
+            //TextView tv = (TextView) findViewById(R.id.textView1);
+            //tv.setText(curIdx + " Z: "+t3[curIdx][2]);
         }
 
     }
@@ -308,6 +305,7 @@ public class Sway extends AppCompatActivity implements SensorEventListener, Shee
         mPaint.setColor(Color.RED);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(2f);
     }
 
